@@ -46,640 +46,727 @@ Logo: Untitled design(2).png
 
 ### Prerequisites
 \`\`\`bash
-# Node.js 16+ and npm/yarn
+# Node.js 18+ and npm
 # Xcode 14+ (for iOS)
-# Android Studio with Android SDK 31+ (for Android)
+# Android Studio with Android SDK 33+ (for Android)
 # Firebase account with Firestore, Auth, and Storage enabled
 \`\`\`
 
 ### Initial Setup
 \`\`\`bash
-# Create React Native project with Expo (recommended for faster development)
-npx create-expo-app GabAISenseGuard
+# Create Expo project with TypeScript
+npx create-expo-app@latest GabAISenseGuard --template
 cd GabAISenseGuard
 
-# Or use React Native CLI
-npx react-native init GabAISenseGuard --template react-native-template-typescript
-
 # Install core dependencies
-npm install @react-navigation/native @react-navigation/bottom-tabs @react-navigation/stack
-npm install react-native-screens react-native-safe-area-context
+npm install expo-router expo-font expo-splash-screen
 npm install firebase @react-native-async-storage/async-storage
 npm install react-native-gesture-handler react-native-reanimated
-npm install expo-gl expo-three three react-native-three
-npm install react-native-chart-kit
-npm install @react-native-community/slider
-npm install react-native-svg
-npm install lottie-react-native
+npm install expo-gl expo-three three @react-three/fiber @react-three/drei
+npm install react-native-chart-kit react-native-svg
+npm install nativewind tailwindcss
+npm install react-native-safe-area-context react-native-screens
 \`\`\`
 
-### Project Structure
+### Project Structure (Expo Router)
 \`\`\`
 GabAISenseGuard/
-├── src/
-│   ├── navigation/
-│   │   ├── RootNavigator.tsx
-│   │   ├── PatientNavigator.tsx
-│   │   ├── CaregiverNavigator.tsx
-│   │   └── AuthNavigator.tsx
-│   ├── screens/
-│   │   ├── auth/
-│   │   │   ├── LoginScreen.tsx
-│   │   │   ├── SignupScreen.tsx
-│   │   │   ├── RoleSelectionScreen.tsx
-│   │   │   └── OnboardingScreen.tsx
-│   │   ├── patient/
-│   │   │   ├── DashboardScreen.tsx
-│   │   │   ├── PressureDetailsScreen.tsx
-│   │   │   ├── GaitAnalyticsScreen.tsx
-│   │   │   ├── RehabilitationScreen.tsx
-│   │   │   └── SettingsScreen.tsx
-│   │   ├── caregiver/
-│   │   │   ├── CaregiverDashboardScreen.tsx
-│   │   │   ├── PatientListScreen.tsx
-│   │   │   ├── PatientDetailScreen.tsx
-│   │   │   ├── AlertsScreen.tsx
-│   │   │   ├── ReportsScreen.tsx
-│   │   │   └── CaregiverSettingsScreen.tsx
-│   │   └── shared/
-│   │       ├── ConnectionRequestsScreen.tsx
-│   │       └── ProfileScreen.tsx
-│   ├── components/
-│   │   ├── ThreeD/
-│   │   │   ├── FootVisualization.tsx
-│   │   │   ├── PressureHeatmap.tsx
-│   │   │   └── GaitVisualization.tsx
-│   │   ├── Cards/
-│   │   │   ├── MetricCard.tsx
-│   │   │   ├── AlertCard.tsx
-│   │   │   ├── PatientCard.tsx
-│   │   │   └── SessionCard.tsx
-│   │   ├── Charts/
-│   │   │   ├── GaitQualityChart.tsx
-│   │   │   ├── PressureDistributionChart.tsx
-│   │   │   ├── ActivityChart.tsx
-│   │   │   └── ThermalChart.tsx
-│   │   ├── Forms/
-│   │   │   ├── LoginForm.tsx
-│   │   │   ├── SignupForm.tsx
-│   │   │   ├── ConnectionForm.tsx
-│   │   │   └── RehabSessionForm.tsx
-│   │   ├── Headers/
-│   │   │   ├── TopHeader.tsx
-│   │   │   ├── TabBar.tsx
-│   │   │   └── BackHeader.tsx
-│   │   └── UI/
-│   │       ├── Button.tsx
-│   │       ├── Input.tsx
-│   │       ├── Modal.tsx
-│   │       └── Loader.tsx
-│   ├── services/
-│   │   ├── firebase/
-│   │   │   ├── auth.ts
-│   │   │   ├── firestore.ts
-│   │   │   ├── storage.ts
-│   │   │   └── realtime.ts
-│   │   ├── sensorData.ts
-│   │   ├── analytics.ts
-│   │   └── notifications.ts
-│   ├── hooks/
-│   │   ├── useAuth.ts
-│   │   ├── usePressureData.ts
-│   │   ├── useGaitData.ts
-│   │   └── useCaregiver.ts
-│   ├── context/
-│   │   ├── AuthContext.tsx
-│   │   ├── UserContext.tsx
-│   │   └── SensorContext.tsx
-│   ├── utils/
-│   │   ├── constants.ts
-│   │   ├── colors.ts
-│   │   ├── fonts.ts
-│   │   ├── formatters.ts
-│   │   └── validators.ts
-│   ├── types/
-│   │   ├── user.ts
-│   │   ├── sensor.ts
-│   │   ├── session.ts
-│   │   └── caregiver.ts
-│   └── App.tsx
+├── app/
+│   ├── _layout.tsx                 # Root layout with AuthProvider
+│   ├── index.tsx                   # Entry point (redirects to auth or app)
+│   ├── (auth)/                     # Auth group (unprotected)
+│   │   ├── _layout.tsx
+│   │   ├── sign-in.tsx
+│   │   ├── sign-up.tsx
+│   │   └── role-selection.tsx
+│   └── (app)/                       # App group (protected)
+│       ├── _layout.tsx              # App layout with bottom tabs
+│       ├── dashboard.tsx           # Patient/Caregiver dashboard
+│       ├── analytics.tsx           # Gait analytics
+│       ├── rehabilitation.tsx      # Rehab sessions
+│       ├── connections.tsx         # Caregiver connections
+│       ├── settings.tsx
+│       └── settings/
+│           ├── profile.tsx
+│           ├── notifications.tsx
+│           └── about.tsx
+├── components/
+│   ├── ui/                         # Reusable UI components
+│   │   ├── Button.tsx
+│   │   ├── TextInput.tsx
+│   │   ├── Card.tsx
+│   │   ├── BottomNavigation.tsx
+│   │   └── Header.tsx
+│   ├── cards/                      # Card components
+│   │   ├── MetricCard.tsx
+│   │   ├── AlertCard.tsx
+│   │   ├── PatientCard.tsx
+│   │   └── SessionCard.tsx
+│   ├── charts/                     # Chart components
+│   │   ├── GaitQualityChart.tsx
+│   │   ├── PressureDistributionChart.tsx
+│   │   └── ActivityChart.tsx
+│   └── 3d/                         # 3D visualization
+│       ├── FootVisualization.tsx
+│       ├── PressureHeatmap.tsx
+│       └── GaitVisualization.tsx
+├── context/
+│   ├── auth-context.tsx            # Auth context provider
+│   ├── user-context.tsx            # User data context
+│   └── sensor-context.tsx          # Sensor data context
+├── utils/
+│   ├── firebase.ts                  # Firebase initialization
+│   ├── firestore.ts                 # Firestore helpers
+│   ├── constants.ts                 # App constants
+│   ├── formatters.ts                # Data formatters
+│   └── validators.ts                # Form validators
+├── types/
+│   ├── user.ts                      # User types
+│   ├── sensor.ts                    # Sensor data types
+│   ├── session.ts                   # Session types
+│   └── caregiver.ts                 # Caregiver types
+├── assets/
+│   ├── images/
+│   │   └── logo.png
+│   └── fonts/
+│       ├── Inter-Bold.ttf
+│       ├── Inter-Regular.ttf
+│       └── Roboto-Regular.ttf
 ├── android/
 ├── ios/
-├── app.json
+├── app.json                        # Expo configuration
+├── app.config.js                   # Dynamic Expo config
 ├── package.json
-├── tsconfig.json
+├── tsconfig.json                   # TypeScript config with path aliases
+├── tailwind.config.js              # Tailwind CSS config
+├── metro.config.js                 # Metro bundler config
+├── babel.config.js                 # Babel config with NativeWind
+├── global.css                      # Tailwind CSS imports
 └── .env.example
 \`\`\`
 
-## 3. Core Design System (TypeScript)
+## 3. Configuration Files
 
-### constants/colors.ts
-\`\`\`typescript
-export const COLORS = {
-  primary: '#4982BB',
-  accent: '#e7a38d',
-  success: '#10B981',
-  warning: '#F59E0B',
-  error: '#EF4444',
-  neutral: {
-    light: '#F8F9FA',
-    lighter: '#FFFFFF',
-    dark: '#2A2D34',
-    medium: '#6B7280',
+### package.json
+\`\`\`json
+{
+  "name": "gabai-sense-guard",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "expo lint"
   },
-  surface: {
-    background: '#FFFFFF',
-    secondary: '#F3F4F6',
-    tertiary: '#E5E7EB',
-  },
-  pressure: {
-    low: '#0EA5E9',
-    moderate: '#84CC16',
-    high: '#FBBF24',
-    critical: '#EF4444',
-  },
-};
+  "dependencies": {
+    "expo": "~54.0.20",
+    "expo-router": "~6.0.13",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "nativewind": "^4.2.1",
+    "tailwindcss": "^3.4.18",
+    "firebase": "^12.6.0",
+    "@react-three/fiber": "^9.4.0",
+    "@react-three/drei": "^10.7.7",
+    "three": "^0.166.1"
+  }
+}
 \`\`\`
 
-### utils/fonts.ts
-\`\`\`typescript
-import { useFonts } from 'expo-font';
+### app.json
+\`\`\`json
+{
+  "expo": {
+    "name": "GabAI Sense Guard",
+    "slug": "gabai-sense-guard",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "gabaisenseguard",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4982BB"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gabai.senseguard"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#4982BB"
+      },
+      "package": "com.gabai.senseguard"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-splash-screen"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
+\`\`\`
 
-export const loadFonts = async () => {
-  await useFonts({
-    'inter-bold': require('../assets/fonts/Inter-Bold.ttf'),
-    'inter-semibold': require('../assets/fonts/Inter-SemiBold.ttf'),
-    'inter-regular': require('../assets/fonts/Inter-Regular.ttf'),
-    'roboto-bold': require('../assets/fonts/Roboto-Bold.ttf'),
-    'roboto-regular': require('../assets/fonts/Roboto-Regular.ttf'),
-  });
-};
+### tailwind.config.js
+\`\`\`javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
+  presets: [require('nativewind/preset')],
+  theme: {
+    extend: {
+      colors: {
+        primary: '#4982BB',        // Primary Blue
+        accent: '#e7a38d',         // Terracotta
+        success: '#10B981',        // Success Green
+        warning: '#F59E0B',        // Warning Orange
+        error: '#EF4444',          // Error Red
+        neutral: {
+          light: '#F8F9FA',
+          lighter: '#FFFFFF',
+          dark: '#2A2D34',
+          medium: '#6B7280',
+        },
+        surface: {
+          background: '#FFFFFF',
+          secondary: '#F3F4F6',
+          tertiary: '#E5E7EB',
+        },
+        pressure: {
+          low: '#0EA5E9',
+          moderate: '#84CC16',
+          high: '#FBBF24',
+          critical: '#EF4444',
+        },
+      },
+      fontFamily: {
+        heading: ['Inter', 'System'],
+        body: ['Roboto', 'System'],
+      },
+    },
+  },
+  plugins: [],
+}
+\`\`\`
 
-export const FONTS = {
-  h1: { fontFamily: 'inter-bold', fontSize: 32, lineHeight: 38 },
-  h2: { fontFamily: 'inter-bold', fontSize: 24, lineHeight: 31 },
-  h3: { fontFamily: 'inter-semibold', fontSize: 18, lineHeight: 25 },
-  body: { fontFamily: 'roboto-regular', fontSize: 16, lineHeight: 24 },
-  bodySmall: { fontFamily: 'roboto-regular', fontSize: 14, lineHeight: 21 },
-  button: { fontFamily: 'roboto-semibold', fontSize: 16, lineHeight: 24 },
-  caption: { fontFamily: 'roboto-regular', fontSize: 12, lineHeight: 18 },
-};
+### metro.config.js
+\`\`\`javascript
+const { getDefaultConfig } = require('expo/metro-config')
+const { withNativeWind } = require('nativewind/metro')
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname)
+
+// Add custom asset extensions if needed
+config.resolver.assetExts = Array.from(
+  new Set([...(config.resolver.assetExts || []), 'glb', 'gltf', 'obj'])
+)
+
+module.exports = withNativeWind(config, { input: './global.css' })
+\`\`\`
+
+### babel.config.js
+\`\`\`javascript
+module.exports = function (api) {
+  api.cache(true)
+  return {
+    presets: [
+      ['babel-preset-expo', { jsxImportSource: 'nativewind' }],
+      'nativewind/babel',
+    ],
+    plugins: ['react-native-reanimated/plugin'],
+  }
+}
+\`\`\`
+
+### tsconfig.json
+\`\`\`json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
+  ]
+}
+\`\`\`
+
+### global.css
+\`\`\`css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens */
+:root {
+  --color-primary: #4982BB;
+  --color-accent: #e7a38d;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --font-heading: 'Inter', system-ui;
+  --font-body: 'Roboto', system-ui;
+}
 \`\`\`
 
 ## 4. Firebase Integration
 
-### services/firebase/auth.ts
+### utils/firebase.ts
 \`\`\`typescript
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  User as FirebaseUser
-} from 'firebase/auth';
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-};
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+}
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-
-export const signup = async (email: string, password: string) => {
-  const result = await createUserWithEmailAndPassword(auth, email, password);
-  return result.user;
-};
-
-export const login = async (email: string, password: string) => {
-  const result = await signInWithEmailAndPassword(auth, email, password);
-  return result.user;
-};
-
-export const signOut = async () => {
-  await firebaseSignOut(auth);
-};
+const app = initializeApp(firebaseConfig)
+export const auth = getAuth(app)
+export const db = getFirestore(app)
+export const storage = getStorage(app)
 \`\`\`
 
-### services/firebase/firestore.ts
+### utils/firestore.ts
 \`\`\`typescript
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, onSnapshot } from 'firebase/firestore';
-import { app } from './auth';
-
-const db = getFirestore(app);
+import { db } from './firebase'
+import {
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+} from 'firebase/firestore'
 
 // User Profile
 export const createUserProfile = async (userId: string, data: any) => {
-  await setDoc(doc(db, 'users', userId), data);
-};
+  await setDoc(doc(db, 'users', userId), data)
+}
 
 export const getUserProfile = async (userId: string) => {
-  const docSnap = await getDoc(doc(db, 'users', userId));
-  return docSnap.data();
-};
+  const docSnap = await getDoc(doc(db, 'users', userId))
+  return docSnap.data()
+}
 
 // Sensor Data
 export const savePressureData = async (userId: string, data: any) => {
   await addDoc(collection(db, 'users', userId, 'pressureReadings'), {
     ...data,
     timestamp: new Date(),
-  });
-};
+  })
+}
 
 export const getPressureHistory = async (userId: string, daysBack: number = 7) => {
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - daysBack);
-  
+  const startDate = new Date()
+  startDate.setDate(startDate.getDate() - daysBack)
+
   const q = query(
     collection(db, 'users', userId, 'pressureReadings'),
     where('timestamp', '>=', startDate)
-  );
-  
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-};
+  )
 
-// Real-time Listener for Live Data
-export const listenToLiveData = (userId: string, callback: Function) => {
-  const q = query(collection(db, 'users', userId, 'liveData'));
-  
+  const snapshot = await getDocs(q)
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+}
+
+// Real-time Listener
+export const listenToLiveData = (userId: string, callback: (data: any[]) => void) => {
+  const q = query(collection(db, 'users', userId, 'liveData'))
+
   const unsubscribe = onSnapshot(q, (snapshot) => {
-    const data = snapshot.docs.map(doc => doc.data());
-    callback(data);
-  });
-  
-  return unsubscribe;
-};
+    const data = snapshot.docs.map((doc) => doc.data())
+    callback(data)
+  })
+
+  return unsubscribe
+}
 
 // Caregiver Connections
-export const requestCaregiverConnection = async (patientId: string, caregiverId: string) => {
+export const requestCaregiverConnection = async (
+  patientId: string,
+  caregiverId: string
+) => {
   await addDoc(collection(db, 'connectionRequests'), {
     patientId,
     caregiverId,
     status: 'pending',
     createdAt: new Date(),
-  });
-};
-
-export const approveCaregiverConnection = async (requestId: string, patientId: string, caregiverId: string) => {
-  await addDoc(collection(db, 'users', patientId, 'caregivers'), {
-    caregiverId,
-    connectedAt: new Date(),
-    permissions: ['view_data', 'view_alerts'],
-  });
-};
+  })
+}
 
 export const getCaregiverConnections = async (patientId: string) => {
-  const snapshot = await getDocs(collection(db, 'users', patientId, 'caregivers'));
-  return snapshot.docs.map(doc => doc.data());
-};
+  const snapshot = await getDocs(collection(db, 'users', patientId, 'caregivers'))
+  return snapshot.docs.map((doc) => doc.data())
+}
 \`\`\`
 
 ## 5. Authentication Flow
 
-### context/AuthContext.tsx
+### context/auth-context.tsx
 \`\`\`typescript
-import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { auth, login, signup, signOut } from '../services/firebase/auth';
-import { getUserProfile, createUserProfile } from '../services/firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import React, { createContext, useState, useEffect, useCallback } from 'react'
+import { onAuthStateChanged, User } from 'firebase/auth'
+import { auth } from '@/utils/firebase'
+import { getUserProfile, createUserProfile } from '@/utils/firestore'
+import { useRouter, useSegments } from 'expo-router'
 
 export interface AuthContextType {
-  currentUser: any | null;
-  loading: boolean;
-  userRole: 'patient' | 'caregiver' | null;
-  signUp: (email: string, password: string, role: string, userData: any) => Promise<void>;
-  logIn: (email: string, password: string) => Promise<void>;
-  logOut: () => Promise<void>;
+  currentUser: User | null
+  loading: boolean
+  userRole: 'patient' | 'caregiver' | null
+  userData: any | null
+  signUp: (
+    email: string,
+    password: string,
+    role: string,
+    userData: any
+  ) => Promise<void>
+  logIn: (email: string, password: string) => Promise<void>
+  logOut: () => Promise<void>
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState<'patient' | 'caregiver' | null>(null);
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [userRole, setUserRole] = useState<'patient' | 'caregiver' | null>(null)
+  const [userData, setUserData] = useState<any | null>(null)
+  const router = useRouter()
+  const segments = useSegments()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const profile = await getUserProfile(user.uid);
-        setCurrentUser(user);
-        setUserRole(profile?.role || null);
+        const profile = await getUserProfile(user.uid)
+        setCurrentUser(user)
+        setUserRole(profile?.role || null)
+        setUserData(profile)
       } else {
-        setCurrentUser(null);
-        setUserRole(null);
+        setCurrentUser(null)
+        setUserRole(null)
+        setUserData(null)
       }
-      setLoading(false);
-    });
+      setLoading(false)
+    })
 
-    return unsubscribe;
-  }, []);
+    return unsubscribe
+  }, [])
 
-  const signUp = useCallback(async (email: string, password: string, role: string, userData: any) => {
-    const user = await signup(email, password);
-    await createUserProfile(user.uid, { email, role, ...userData, createdAt: new Date() });
-    setUserRole(role as any);
-  }, []);
+  // Handle navigation based on auth state
+  useEffect(() => {
+    if (loading) return
+
+    const inAuthGroup = segments[0] === '(auth)'
+    const inAppGroup = segments[0] === '(app)'
+
+    if (!currentUser && !inAuthGroup) {
+      router.replace('/(auth)/sign-in')
+    } else if (currentUser && inAuthGroup) {
+      router.replace('/(app)/dashboard')
+    }
+  }, [currentUser, loading, segments])
+
+  const signUp = useCallback(
+    async (email: string, password: string, role: string, userData: any) => {
+      const { createUserWithEmailAndPassword } = await import('firebase/auth')
+      const user = await createUserWithEmailAndPassword(auth, email, password)
+      await createUserProfile(user.user.uid, { email, role, ...userData, createdAt: new Date() })
+      setUserRole(role as any)
+    },
+    []
+  )
 
   const logIn = useCallback(async (email: string, password: string) => {
-    const user = await login(email, password);
-    const profile = await getUserProfile(user.uid);
-    setUserRole(profile?.role || null);
-  }, []);
+    const { signInWithEmailAndPassword } = await import('firebase/auth')
+    await signInWithEmailAndPassword(auth, email, password)
+    const profile = await getUserProfile(auth.currentUser!.uid)
+    setUserRole(profile?.role || null)
+  }, [])
 
   const logOut = useCallback(async () => {
-    await signOut();
-    setCurrentUser(null);
-    setUserRole(null);
-  }, []);
+    const { signOut } = await import('firebase/auth')
+    await signOut(auth)
+    setCurrentUser(null)
+    setUserRole(null)
+    setUserData(null)
+  }, [])
 
   return (
-    <AuthContext.Provider value={{ currentUser, loading, userRole, signUp, logIn, logOut }}>
+    <AuthContext.Provider
+      value={{ currentUser, loading, userRole, userData, signUp, logIn, logOut }}
+    >
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext);
+  const context = React.useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error('useAuth must be used within AuthProvider')
   }
-  return context;
-};
+  return context
+}
 \`\`\`
 
-## 6. Navigation Architecture
-
-### navigation/RootNavigator.tsx
+### app/_layout.tsx
 \`\`\`typescript
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from '../context/AuthContext';
-import { ActivityIndicator, View } from 'react-native';
-import { COLORS } from '../utils/colors';
+import AuthProvider from '@/context/auth-context'
+import '@/global.css'
+import { Stack } from 'expo-router'
+import { View } from 'react-native'
 
-import AuthNavigator from './AuthNavigator';
-import PatientNavigator from './PatientNavigator';
-import CaregiverNavigator from './CaregiverNavigator';
-
-const Stack = createNativeStackNavigator();
-
-const RootNavigator = () => {
-  const { currentUser, userRole, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.neutral.lighter }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <View className="flex-1 w-full">
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(app)" />
+        </Stack>
       </View>
-    );
-  }
+    </AuthProvider>
+  )
+}
+\`\`\`
+
+### app/index.tsx
+\`\`\`typescript
+import { useEffect } from 'react'
+import { useRouter } from 'expo-router'
+import { useAuth } from '@/context/auth-context'
+import { View, ActivityIndicator } from 'react-native'
+
+export default function Index() {
+  const { currentUser, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading) {
+      if (currentUser) {
+        router.replace('/(app)/dashboard')
+      } else {
+        router.replace('/(auth)/sign-in')
+      }
+    }
+  }, [currentUser, loading])
 
   return (
-    <NavigationContainer>
-      {!currentUser ? (
-        <AuthNavigator />
-      ) : userRole === 'patient' ? (
-        <PatientNavigator />
-      ) : (
-        <CaregiverNavigator />
-      )}
-    </NavigationContainer>
-  );
-};
-
-export default RootNavigator;
+    <View className="flex-1 items-center justify-center bg-primary">
+      <ActivityIndicator size="large" color="#FFFFFF" />
+    </View>
+  )
+}
 \`\`\`
 
-### navigation/PatientNavigator.tsx
+## 6. Navigation Architecture (Expo Router)
+
+### app/(auth)/_layout.tsx
 \`\`\`typescript
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../utils/colors';
+import { Stack } from 'expo-router'
 
-// Patient Screens
-import DashboardScreen from '../screens/patient/DashboardScreen';
-import GaitAnalyticsScreen from '../screens/patient/GaitAnalyticsScreen';
-import RehabilitationScreen from '../screens/patient/RehabilitationScreen';
-import SettingsScreen from '../screens/patient/SettingsScreen';
-import PressureDetailsScreen from '../screens/patient/PressureDetailsScreen';
-import ConnectionRequestsScreen from '../screens/shared/ConnectionRequestsScreen';
-
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
-
-const DashboardStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="DashboardMain" component={DashboardScreen} />
-    <Stack.Screen name="PressureDetails" component={PressureDetailsScreen} />
-  </Stack.Navigator>
-);
-
-const PatientTabNavigator = () => (
-  <Tab.Navigator
-    screenOptions={({ route }) => ({
-      headerShown: false,
-      tabBarIcon: ({ focused, color, size }) => {
-        const iconName = 
-          route.name === 'Dashboard' ? 'home' :
-          route.name === 'Analytics' ? 'stats-chart' :
-          route.name === 'Rehab' ? 'fitness' :
-          route.name === 'Connections' ? 'people' :
-          'settings';
-        
-        return <Ionicons name={iconName} size={size} color={color} />;
-      },
-      tabBarActiveTintColor: COLORS.primary,
-      tabBarInactiveTintColor: COLORS.neutral.medium,
-      tabBarStyle: { backgroundColor: COLORS.neutral.lighter, borderTopColor: COLORS.surface.tertiary },
-    })}
-  >
-    <Tab.Screen 
-      name="Dashboard" 
-      component={DashboardStack}
-      options={{ title: 'Home' }}
-    />
-    <Tab.Screen 
-      name="Analytics" 
-      component={GaitAnalyticsScreen}
-      options={{ title: 'Analytics' }}
-    />
-    <Tab.Screen 
-      name="Rehab" 
-      component={RehabilitationScreen}
-      options={{ title: 'Rehab' }}
-    />
-    <Tab.Screen 
-      name="Connections" 
-      component={ConnectionRequestsScreen}
-      options={{ title: 'Caregivers' }}
-    />
-    <Tab.Screen 
-      name="Settings" 
-      component={SettingsScreen}
-      options={{ title: 'Settings' }}
-    />
-  </Tab.Navigator>
-);
-
-export default PatientTabNavigator;
+export default function AuthLayout() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="sign-in" />
+      <Stack.Screen name="sign-up" />
+      <Stack.Screen name="role-selection" />
+    </Stack>
+  )
+}
 \`\`\`
 
-### navigation/CaregiverNavigator.tsx
+### app/(app)/_layout.tsx
 \`\`\`typescript
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../utils/colors';
+import BottomNavigation from '@/components/ui/BottomNavigation'
+import { useAuth } from '@/context/auth-context'
+import { Stack, usePathname } from 'expo-router'
+import { View } from 'react-native'
 
-// Caregiver Screens
-import CaregiverDashboardScreen from '../screens/caregiver/CaregiverDashboardScreen';
-import PatientListScreen from '../screens/caregiver/PatientListScreen';
-import PatientDetailScreen from '../screens/caregiver/PatientDetailScreen';
-import AlertsScreen from '../screens/caregiver/AlertsScreen';
-import ReportsScreen from '../screens/caregiver/ReportsScreen';
-import CaregiverSettingsScreen from '../screens/caregiver/CaregiverSettingsScreen';
+export default function AppLayout() {
+  const { userRole } = useAuth()
+  const pathname = usePathname()
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+  // Hide bottom nav on certain screens
+  const hideBottomNav = pathname?.includes('/settings/') || pathname?.includes('/analytics/')
 
-const PatientsStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="PatientList" component={PatientListScreen} />
-    <Stack.Screen name="PatientDetail" component={PatientDetailScreen} />
-  </Stack.Navigator>
-);
+  return (
+    <View className="flex-1 w-full">
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="dashboard" />
+        <Stack.Screen name="analytics" />
+        <Stack.Screen name="rehabilitation" />
+        <Stack.Screen name="connections" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="settings/profile" />
+        <Stack.Screen name="settings/notifications" />
+      </Stack>
+      {!hideBottomNav && <BottomNavigation />}
+    </View>
+  )
+}
+\`\`\`
 
-const CaregiverTabNavigator = () => (
-  <Tab.Navigator
-    screenOptions={({ route }) => ({
-      headerShown: false,
-      tabBarIcon: ({ focused, color, size }) => {
-        const iconName = 
-          route.name === 'Dashboard' ? 'home' :
-          route.name === 'Patients' ? 'people' :
-          route.name === 'Alerts' ? 'warning' :
-          route.name === 'Reports' ? 'document' :
-          'settings';
-        
-        return <Ionicons name={iconName} size={size} color={color} />;
-      },
-      tabBarActiveTintColor: COLORS.primary,
-      tabBarInactiveTintColor: COLORS.neutral.medium,
-      tabBarStyle: { backgroundColor: COLORS.neutral.lighter, borderTopColor: COLORS.surface.tertiary },
-    })}
-  >
-    <Tab.Screen 
-      name="Dashboard" 
-      component={CaregiverDashboardScreen}
-      options={{ title: 'Dashboard' }}
-    />
-    <Tab.Screen 
-      name="Patients" 
-      component={PatientsStack}
-      options={{ title: 'My Patients' }}
-    />
-    <Tab.Screen 
-      name="Alerts" 
-      component={AlertsScreen}
-      options={{ title: 'Alerts' }}
-    />
-    <Tab.Screen 
-      name="Reports" 
-      component={ReportsScreen}
-      options={{ title: 'Reports' }}
-    />
-    <Tab.Screen 
-      name="Settings" 
-      component={CaregiverSettingsScreen}
-      options={{ title: 'Settings' }}
-    />
-  </Tab.Navigator>
-);
+### components/ui/BottomNavigation.tsx
+\`\`\`typescript
+import { View, TouchableOpacity, Text } from 'react-native'
+import { useRouter, usePathname } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import { useAuth } from '@/context/auth-context'
 
-export default CaregiverTabNavigator;
+export default function BottomNavigation() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const { userRole } = useAuth()
+
+  const tabs = [
+    { name: 'dashboard', label: 'Home', icon: 'home' },
+    { name: 'analytics', label: 'Analytics', icon: 'stats-chart' },
+    { name: 'rehabilitation', label: 'Rehab', icon: 'fitness' },
+    ...(userRole === 'patient'
+      ? [{ name: 'connections', label: 'Caregivers', icon: 'people' }]
+      : []),
+    { name: 'settings', label: 'Settings', icon: 'settings' },
+  ]
+
+  return (
+    <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex-row justify-around py-2 safe-area-bottom">
+      {tabs.map((tab) => {
+        const isActive = pathname === `/(app)/${tab.name}`
+        return (
+          <TouchableOpacity
+            key={tab.name}
+            onPress={() => router.push(`/(app)/${tab.name}`)}
+            className="items-center flex-1"
+          >
+            <Ionicons
+              name={tab.icon as any}
+              size={24}
+              color={isActive ? '#4982BB' : '#6B7280'}
+            />
+            <Text
+              className={`text-xs mt-1 ${
+                isActive ? 'text-primary font-semibold' : 'text-neutral-medium'
+              }`}
+            >
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        )
+      })}
+    </View>
+  )
+}
 \`\`\`
 
 ## 7. Patient Screen Flows
 
-### screens/patient/DashboardScreen.tsx
+### app/(app)/dashboard.tsx
 \`\`\`typescript
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   ScrollView,
   View,
   Text,
-  StyleSheet,
   RefreshControl,
   Dimensions,
-} from 'react-native';
-import { useAuth } from '../../context/AuthContext';
-import { getPressureHistory } from '../../services/firebase/firestore';
-import { COLORS } from '../../utils/colors';
-import { FONTS } from '../../utils/fonts';
-import FootVisualization from '../../components/ThreeD/FootVisualization';
-import MetricCard from '../../components/Cards/MetricCard';
-import GaitQualityChart from '../../components/Charts/GaitQualityChart';
+} from 'react-native'
+import { useAuth } from '@/context/auth-context'
+import { getPressureHistory } from '@/utils/firestore'
+import FootVisualization from '@/components/3d/FootVisualization'
+import MetricCard from '@/components/cards/MetricCard'
 
-const DashboardScreen = ({ navigation }: any) => {
-  const { currentUser } = useAuth();
-  const [pressureData, setPressureData] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [selectedFoot, setSelectedFoot] = useState<'left' | 'right'>('left');
+export default function DashboardScreen() {
+  const { currentUser } = useAuth()
+  const [pressureData, setPressureData] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
+  const [selectedFoot, setSelectedFoot] = useState<'left' | 'right'>('left')
 
   useEffect(() => {
-    loadPressureData();
-  }, []);
+    loadPressureData()
+  }, [])
 
   const loadPressureData = async () => {
     if (currentUser) {
-      const data = await getPressureHistory(currentUser.uid, 1);
+      const data = await getPressureHistory(currentUser.uid, 1)
       if (data.length > 0) {
-        setPressureData(data[data.length - 1]);
+        setPressureData(data[data.length - 1])
       }
     }
-  };
+  }
 
   const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    loadPressureData().then(() => setRefreshing(false));
-  }, []);
+    setRefreshing(true)
+    loadPressureData().then(() => setRefreshing(false))
+  }, [])
 
   return (
-    <ScrollView 
-      style={styles.container}
+    <ScrollView
+      className="flex-1 bg-neutral-lighter"
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.greeting}>Welcome back</Text>
-        <Text style={styles.date}>{new Date().toLocaleDateString()}</Text>
+      <View className="px-4 py-5 bg-primary">
+        <Text className="text-2xl font-bold text-white mb-1">Welcome back</Text>
+        <Text className="text-sm text-white/70">
+          {new Date().toLocaleDateString()}
+        </Text>
       </View>
 
       {/* 3D Foot Visualization */}
-      <View style={styles.visualizationSection}>
-        <View style={styles.footHeader}>
-          <Text style={styles.sectionTitle}>Plantar Pressure</Text>
-          <View style={styles.footToggle}>
-            <Text 
-              style={[styles.footButton, selectedFoot === 'left' && styles.footButtonActive]}
+      <View className="my-5 px-4">
+        <View className="flex-row justify-between items-center mb-3">
+          <Text className="text-lg font-semibold text-neutral-dark">
+            Plantar Pressure
+          </Text>
+          <View className="flex-row gap-2">
+            <Text
+              className={`text-sm px-3 py-1.5 rounded ${
+                selectedFoot === 'left'
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-secondary text-neutral-medium'
+              }`}
               onPress={() => setSelectedFoot('left')}
             >
               Left
             </Text>
-            <Text 
-              style={[styles.footButton, selectedFoot === 'right' && styles.footButtonActive]}
+            <Text
+              className={`text-sm px-3 py-1.5 rounded ${
+                selectedFoot === 'right'
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-secondary text-neutral-medium'
+              }`}
               onPress={() => setSelectedFoot('right')}
             >
               Right
@@ -690,415 +777,470 @@ const DashboardScreen = ({ navigation }: any) => {
       </View>
 
       {/* Quick Stats */}
-      <View style={styles.statsGrid}>
-        <MetricCard 
-          title="Max Pressure" 
-          value="487" 
-          unit="kPa" 
-          color={COLORS.primary}
+      <View className="flex-row gap-3 px-4 mb-5">
+        <MetricCard
+          title="Max Pressure"
+          value="487"
+          unit="kPa"
+          color="primary"
           icon="barbell"
         />
-        <MetricCard 
-          title="Avg Pressure" 
-          value="285" 
-          unit="kPa" 
-          color={COLORS.accent}
+        <MetricCard
+          title="Avg Pressure"
+          value="285"
+          unit="kPa"
+          color="accent"
           icon="stats-chart"
         />
       </View>
 
-      {/* Gait Quality Trend */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Weekly Gait Quality</Text>
-        <GaitQualityChart />
-      </View>
-
       {/* Recent Alerts */}
-      <View style={styles.section}>
-        <View style={styles.alertHeader}>
-          <Text style={styles.sectionTitle}>Recent Alerts</Text>
-          <Text style={styles.viewAll} onPress={() => navigation.navigate('Alerts')}>View All</Text>
+      <View className="px-4 mb-5">
+        <View className="flex-row justify-between items-center mb-3">
+          <Text className="text-lg font-semibold text-neutral-dark">
+            Recent Alerts
+          </Text>
         </View>
-        <View style={styles.alertBox}>
-          <Text style={styles.alertText}>No critical alerts in the last 24 hours</Text>
+        <View className="bg-surface-secondary rounded-lg p-3">
+          <Text className="text-sm text-neutral-medium">
+            No critical alerts in the last 24 hours
+          </Text>
         </View>
       </View>
     </ScrollView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.neutral.lighter },
-  header: { paddingHorizontal: 16, paddingVertical: 20, backgroundColor: COLORS.primary },
-  greeting: { ...FONTS.h2, color: COLORS.neutral.lighter, marginBottom: 4 },
-  date: { ...FONTS.bodySmall, color: 'rgba(255,255,255,0.7)' },
-  visualizationSection: { marginVertical: 20, paddingHorizontal: 16 },
-  footHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  sectionTitle: { ...FONTS.h3, color: COLORS.neutral.dark },
-  footToggle: { flexDirection: 'row', gap: 8 },
-  footButton: { ...FONTS.bodySmall, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: COLORS.surface.secondary, color: COLORS.neutral.medium },
-  footButtonActive: { backgroundColor: COLORS.primary, color: COLORS.neutral.lighter },
-  statsGrid: { flexDirection: 'row', gap: 12, paddingHorizontal: 16, marginBottom: 20 },
-  section: { paddingHorizontal: 16, marginBottom: 20 },
-  alertHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  viewAll: { ...FONTS.bodySmall, color: COLORS.primary },
-  alertBox: { backgroundColor: COLORS.surface.secondary, borderRadius: 8, padding: 12 },
-  alertText: { ...FONTS.bodySmall, color: COLORS.neutral.medium },
-});
-
-export default DashboardScreen;
+  )
+}
 \`\`\`
 
 ## 8. Caregiver Screen Flows
 
-### screens/caregiver/CaregiverDashboardScreen.tsx
+### app/(app)/dashboard.tsx (Caregiver View)
 \`\`\`typescript
-import React, { useState, useEffect } from 'react';
-import {
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
-import { useAuth } from '../../context/AuthContext';
-import { COLORS } from '../../utils/colors';
-import { FONTS } from '../../utils/fonts';
-import PatientCard from '../../components/Cards/PatientCard';
-import AlertCard from '../../components/Cards/AlertCard';
+import React, { useState, useEffect } from 'react'
+import { ScrollView, View, Text, TouchableOpacity } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useAuth } from '@/context/auth-context'
+import PatientCard from '@/components/cards/PatientCard'
+import AlertCard from '@/components/cards/AlertCard'
 
-const CaregiverDashboardScreen = ({ navigation }: any) => {
-  const { currentUser } = useAuth();
-  const [patients, setPatients] = useState<any[]>([]);
-  const [activeAlerts, setActiveAlerts] = useState<any[]>([]);
+export default function CaregiverDashboardScreen() {
+  const { currentUser } = useAuth()
+  const router = useRouter()
+  const [patients, setPatients] = useState<any[]>([])
+  const [activeAlerts, setActiveAlerts] = useState<any[]>([])
 
   useEffect(() => {
-    // Load connected patients and their alerts
-    loadPatients();
-  }, []);
+    loadPatients()
+  }, [])
 
   const loadPatients = async () => {
     // Fetch from Firebase
-    // For now, mock data
+    // Mock data for example
     setPatients([
-      { id: '1', name: 'John Doe', status: 'active', maxPressure: 487, riskLevel: 'low' },
-      { id: '2', name: 'Jane Smith', status: 'active', maxPressure: 520, riskLevel: 'medium' },
-      { id: '3', name: 'Bob Johnson', status: 'inactive', maxPressure: 350, riskLevel: 'low' },
-    ]);
+      {
+        id: '1',
+        name: 'John Doe',
+        status: 'active',
+        maxPressure: 487,
+        riskLevel: 'low',
+      },
+      {
+        id: '2',
+        name: 'Jane Smith',
+        status: 'active',
+        maxPressure: 520,
+        riskLevel: 'medium',
+      },
+    ])
 
     setActiveAlerts([
-      { id: '1', patientName: 'Jane Smith', message: 'High pressure detected at heel', severity: 'warning', time: '2 hours ago' },
-      { id: '2', patientName: 'John Doe', message: 'Missed rehabilitation session', severity: 'info', time: '4 hours ago' },
-    ]);
-  };
+      {
+        id: '1',
+        patientName: 'Jane Smith',
+        message: 'High pressure detected at heel',
+        severity: 'warning',
+        time: '2 hours ago',
+      },
+    ])
+  }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView className="flex-1 bg-neutral-lighter">
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Care Dashboard</Text>
-        <Text style={styles.subtitle}>Monitor your patients' progress</Text>
+      <View className="px-4 py-5 bg-primary">
+        <Text className="text-2xl font-bold text-white mb-1">Care Dashboard</Text>
+        <Text className="text-sm text-white/70">
+          Monitor your patients' progress
+        </Text>
       </View>
 
       {/* Quick Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statBox}>
-          <Text style={styles.statNumber}>{patients.length}</Text>
-          <Text style={styles.statLabel}>Patients</Text>
+      <View className="flex-row px-4 my-5 gap-3">
+        <View className="flex-1 bg-white py-4 px-3 rounded-lg items-center">
+          <Text className="text-lg font-semibold text-primary mb-1">
+            {patients.length}
+          </Text>
+          <Text className="text-xs text-neutral-medium">Patients</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statNumber}>{activeAlerts.length}</Text>
-          <Text style={styles.statLabel}>Active Alerts</Text>
+        <View className="flex-1 bg-white py-4 px-3 rounded-lg items-center">
+          <Text className="text-lg font-semibold text-primary mb-1">
+            {activeAlerts.length}
+          </Text>
+          <Text className="text-xs text-neutral-medium">Active Alerts</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statNumber}>92%</Text>
-          <Text style={styles.statLabel}>Compliance</Text>
+        <View className="flex-1 bg-white py-4 px-3 rounded-lg items-center">
+          <Text className="text-lg font-semibold text-primary mb-1">92%</Text>
+          <Text className="text-xs text-neutral-medium">Compliance</Text>
         </View>
       </View>
 
       {/* My Patients */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>My Patients</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Patients')}>
-            <Text style={styles.seeAll}>See All</Text>
+      <View className="px-4 mb-5">
+        <View className="flex-row justify-between items-center mb-3">
+          <Text className="text-lg font-semibold text-neutral-dark">
+            My Patients
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/(app)/patients')}>
+            <Text className="text-sm text-primary">See All</Text>
           </TouchableOpacity>
         </View>
-        {patients.slice(0, 3).map(patient => (
-          <PatientCard 
+        {patients.slice(0, 3).map((patient) => (
+          <PatientCard
             key={patient.id}
             patient={patient}
-            onPress={() => navigation.navigate('PatientDetail', { patientId: patient.id })}
+            onPress={() => router.push(`/(app)/patient/${patient.id}`)}
           />
         ))}
       </View>
 
       {/* Recent Alerts */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Alerts</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
-            <Text style={styles.seeAll}>View All</Text>
+      <View className="px-4 mb-5">
+        <View className="flex-row justify-between items-center mb-3">
+          <Text className="text-lg font-semibold text-neutral-dark">
+            Recent Alerts
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/(app)/alerts')}>
+            <Text className="text-sm text-primary">View All</Text>
           </TouchableOpacity>
         </View>
-        {activeAlerts.slice(0, 3).map(alert => (
+        {activeAlerts.slice(0, 3).map((alert) => (
           <AlertCard key={alert.id} alert={alert} />
         ))}
       </View>
     </ScrollView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.neutral.lighter },
-  header: { paddingHorizontal: 16, paddingVertical: 20, backgroundColor: COLORS.primary },
-  title: { ...FONTS.h2, color: COLORS.neutral.lighter, marginBottom: 4 },
-  subtitle: { ...FONTS.bodySmall, color: 'rgba(255,255,255,0.7)' },
-  statsContainer: { flexDirection: 'row', paddingHorizontal: 16, marginVertical: 20, gap: 12 },
-  statBox: { flex: 1, backgroundColor: COLORS.surface.background, paddingVertical: 16, paddingHorizontal: 12, borderRadius: 8, alignItems: 'center' },
-  statNumber: { ...FONTS.h3, color: COLORS.primary, marginBottom: 4 },
-  statLabel: { ...FONTS.caption, color: COLORS.neutral.medium },
-  section: { paddingHorizontal: 16, marginBottom: 20 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  sectionTitle: { ...FONTS.h3, color: COLORS.neutral.dark },
-  seeAll: { ...FONTS.bodySmall, color: COLORS.primary },
-});
-
-export default CaregiverDashboardScreen;
+  )
+}
 \`\`\`
 
 ## 9. 3D Visualization Components
 
-### components/ThreeD/FootVisualization.tsx
+### components/3d/FootVisualization.tsx
 \`\`\`typescript
-import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import { Canvas, useFrame } from '@react-three/fiber/native';
-import * as THREE from 'three';
-import { COLORS } from '../../utils/colors';
+import React, { useRef } from 'react'
+import { View, StyleSheet, Dimensions } from 'react-native'
+import { Canvas, useFrame } from '@react-three/fiber/native'
+import * as THREE from 'three'
 
-const FootModel = ({ pressureData, foot }: { pressureData: any; foot: 'left' | 'right' }) => {
-  const groupRef = useRef<THREE.Group>(null);
+const FootModel = ({
+  pressureData,
+  foot,
+}: {
+  pressureData: any
+  foot: 'left' | 'right'
+}) => {
+  const groupRef = useRef<THREE.Group>(null)
 
-  // Create procedural foot geometry
   const createFootGeometry = () => {
-    const geometry = new THREE.BufferGeometry();
-    
-    // Foot outline vertices (simplified)
+    const geometry = new THREE.BufferGeometry()
     const vertices = new Float32Array([
-      // Heel
       -0.2, -1.0, 0,
       0.2, -1.0, 0,
-      // Mid-foot
       -0.3, -0.3, 0,
       0.3, -0.3, 0,
-      // Ball of foot
       -0.25, 0.5, 0,
       0.25, 0.5, 0,
-      // Toes
       0, 0.9, 0,
-    ]);
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    
-    return geometry;
-  };
+    ])
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
+    return geometry
+  }
 
   useFrame(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += 0.003;
+      groupRef.current.rotation.y += 0.003
     }
-  });
+  })
 
   const getPressureColor = (pressure: number) => {
-    if (pressure < 250) return COLORS.pressure.low;
-    if (pressure < 350) return COLORS.pressure.moderate;
-    if (pressure < 450) return COLORS.pressure.high;
-    return COLORS.pressure.critical;
-  };
+    if (pressure < 250) return '#0EA5E9'
+    if (pressure < 350) return '#84CC16'
+    if (pressure < 450) return '#FBBF24'
+    return '#EF4444'
+  }
 
   return (
     <group ref={groupRef}>
-      {/* Foot base */}
       <mesh castShadow>
         <bufferGeometry args={[createFootGeometry()]} />
-        <meshStandardMaterial color={COLORS.primary} opacity={0.6} transparent />
+        <meshStandardMaterial color="#4982BB" opacity={0.6} transparent />
       </mesh>
 
-      {/* Pressure zones visualization */}
-      {pressureData && pressureData.sensorReadings?.map((reading: any, idx: number) => (
-        <sphere key={idx} position={[reading.x, reading.y, reading.z + 0.1]} scale={0.05}>
-          <meshStandardMaterial 
-            color={getPressureColor(reading.pressure)} 
+      {pressureData?.sensorReadings?.map((reading: any, idx: number) => (
+        <mesh
+          key={idx}
+          position={[reading.x, reading.y, reading.z + 0.1]}
+          scale={0.05}
+        >
+          <sphereGeometry />
+          <meshStandardMaterial
+            color={getPressureColor(reading.pressure)}
             emissive={getPressureColor(reading.pressure)}
             emissiveIntensity={0.5}
           />
-        </sphere>
+        </mesh>
       ))}
 
-      {/* Lighting */}
       <ambientLight intensity={0.6} />
       <pointLight position={[5, 5, 5]} intensity={1} />
     </group>
-  );
-};
+  )
+}
 
-const FootVisualization = ({ foot, data }: { foot: 'left' | 'right'; data: any }) => {
-  const canvasRef = useRef<any>(null);
-
+const FootVisualization = ({
+  foot,
+  data,
+}: {
+  foot: 'left' | 'right'
+  data: any
+}) => {
   return (
-    <View style={styles.container}>
+    <View className="h-64 rounded-xl overflow-hidden bg-transparent">
       <Canvas
-        ref={canvasRef}
-        style={styles.canvas}
+        style={{ flex: 1 }}
         gl={{ transparent: true }}
         camera={{ position: [0, 0, 2], fov: 50 }}
       >
         <FootModel pressureData={data} foot={foot} />
       </Canvas>
     </View>
-  );
-};
+  )
+}
 
-const styles = StyleSheet.create({
-  container: {
-    height: Dimensions.get('window').width * 0.6,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: 'transparent',
-  },
-  canvas: { flex: 1 },
-});
-
-export default FootVisualization;
+export default FootVisualization
 \`\`\`
 
 ## 10. Key Components Library
 
-### components/Cards/MetricCard.tsx
+### components/cards/MetricCard.tsx
 \`\`\`typescript
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../utils/colors';
-import { FONTS } from '../../utils/fonts';
+import React from 'react'
+import { View, Text } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 
 interface MetricCardProps {
-  title: string;
-  value: string;
-  unit: string;
-  color: string;
-  icon: string;
+  title: string
+  value: string
+  unit: string
+  color: 'primary' | 'accent' | 'success' | 'warning' | 'error'
+  icon: string
 }
 
-const MetricCard = ({ title, value, unit, color, icon }: MetricCardProps) => (
-  <View style={[styles.card, { borderLeftColor: color }]}>
-    <View style={styles.iconContainer}>
-      <Ionicons name={icon as any} size={24} color={color} />
-    </View>
-    <View style={styles.content}>
-      <Text style={styles.title}>{title}</Text>
-      <View style={styles.valueContainer}>
-        <Text style={styles.value}>{value}</Text>
-        <Text style={styles.unit}>{unit}</Text>
+const colorMap = {
+  primary: '#4982BB',
+  accent: '#e7a38d',
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+}
+
+export default function MetricCard({
+  title,
+  value,
+  unit,
+  color,
+  icon,
+}: MetricCardProps) {
+  return (
+    <View
+      className="flex-1 bg-white rounded-xl p-4 border-l-4 flex-row items-center"
+      style={{ borderLeftColor: colorMap[color] }}
+    >
+      <View className="mr-3">
+        <Ionicons name={icon as any} size={24} color={colorMap[color]} />
+      </View>
+      <View className="flex-1">
+        <Text className="text-xs text-neutral-medium mb-1">{title}</Text>
+        <View className="flex-row items-baseline">
+          <Text className="text-lg font-semibold text-neutral-dark">{value}</Text>
+          <Text className="text-sm text-neutral-medium ml-1">{unit}</Text>
+        </View>
       </View>
     </View>
-  </View>
-);
-
-const styles = StyleSheet.create({
-  card: {
-    flex: 1,
-    backgroundColor: COLORS.surface.background,
-    borderRadius: 12,
-    padding: 16,
-    borderLeftWidth: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  iconContainer: { marginRight: 12 },
-  content: { flex: 1 },
-  title: { ...FONTS.caption, color: COLORS.neutral.medium, marginBottom: 4 },
-  valueContainer: { flexDirection: 'row', alignItems: 'baseline' },
-  value: { ...FONTS.h3, color: COLORS.neutral.dark },
-  unit: { ...FONTS.bodySmall, color: COLORS.neutral.medium, marginLeft: 4 },
-});
-
-export default MetricCard;
+  )
+}
 \`\`\`
 
-### components/Cards/PatientCard.tsx
+### components/cards/PatientCard.tsx
 \`\`\`typescript
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../utils/colors';
-import { FONTS } from '../../utils/fonts';
+import React from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
 
 interface PatientCardProps {
-  patient: { id: string; name: string; status: string; maxPressure: number; riskLevel: string };
-  onPress: () => void;
+  patient: {
+    id: string
+    name: string
+    status: string
+    maxPressure: number
+    riskLevel: string
+  }
+  onPress: () => void
 }
 
-const PatientCard = ({ patient, onPress }: PatientCardProps) => {
-  const riskColor = 
-    patient.riskLevel === 'high' ? COLORS.error :
-    patient.riskLevel === 'medium' ? COLORS.warning :
-    COLORS.success;
+const riskColorMap = {
+  high: '#EF4444',
+  medium: '#F59E0B',
+  low: '#10B981',
+}
+
+export default function PatientCard({ patient, onPress }: PatientCardProps) {
+  const riskColor = riskColorMap[patient.riskLevel as keyof typeof riskColorMap] || '#6B7280'
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <View style={styles.header}>
-        <Text style={styles.name}>{patient.name}</Text>
-        <View style={[styles.riskBadge, { backgroundColor: riskColor }]}>
-          <Text style={styles.riskText}>{patient.riskLevel}</Text>
+    <TouchableOpacity
+      className="bg-white rounded-xl p-4 mb-3 shadow-sm"
+      onPress={onPress}
+    >
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className="text-lg font-semibold text-neutral-dark">{patient.name}</Text>
+        <View
+          className="px-2.5 py-1 rounded"
+          style={{ backgroundColor: riskColor }}
+        >
+          <Text className="text-xs text-white capitalize">{patient.riskLevel}</Text>
         </View>
       </View>
-      <View style={styles.stats}>
-        <View style={styles.stat}>
-          <Text style={styles.statLabel}>Max Pressure</Text>
-          <Text style={styles.statValue}>{patient.maxPressure} kPa</Text>
+      <View className="flex-row gap-4">
+        <View className="flex-1">
+          <Text className="text-xs text-neutral-medium mb-1">Max Pressure</Text>
+          <Text className="text-base text-neutral-dark">
+            {patient.maxPressure} kPa
+          </Text>
         </View>
-        <View style={styles.stat}>
-          <Text style={styles.statLabel}>Status</Text>
-          <Text style={[styles.statValue, { color: patient.status === 'active' ? COLORS.success : COLORS.neutral.medium }]}>
+        <View className="flex-1">
+          <Text className="text-xs text-neutral-medium mb-1">Status</Text>
+          <Text
+            className={`text-base ${
+              patient.status === 'active' ? 'text-success' : 'text-neutral-medium'
+            }`}
+          >
             {patient.status}
           </Text>
         </View>
       </View>
     </TouchableOpacity>
-  );
-};
+  )
+}
+\`\`\`
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: COLORS.surface.background,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  name: { ...FONTS.h3, color: COLORS.neutral.dark },
-  riskBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
-  riskText: { ...FONTS.caption, color: COLORS.neutral.lighter, textTransform: 'capitalize' },
-  stats: { flexDirection: 'row', gap: 16 },
-  stat: { flex: 1 },
-  statLabel: { ...FONTS.caption, color: COLORS.neutral.medium, marginBottom: 4 },
-  statValue: { ...FONTS.body, color: COLORS.neutral.dark },
-});
+### components/ui/Button.tsx
+\`\`\`typescript
+import React from 'react'
+import { TouchableOpacity, Text, ActivityIndicator } from 'react-native'
 
-export default PatientCard;
+interface ButtonProps {
+  title: string
+  onPress: () => void
+  variant?: 'primary' | 'secondary' | 'outline'
+  loading?: boolean
+  disabled?: boolean
+  className?: string
+}
+
+export default function Button({
+  title,
+  onPress,
+  variant = 'primary',
+  loading = false,
+  disabled = false,
+  className = '',
+}: ButtonProps) {
+  const variantStyles = {
+    primary: 'bg-primary',
+    secondary: 'bg-accent',
+    outline: 'bg-transparent border-2 border-primary',
+  }
+
+  const textStyles = {
+    primary: 'text-white',
+    secondary: 'text-white',
+    outline: 'text-primary',
+  }
+
+  return (
+    <TouchableOpacity
+      className={`${variantStyles[variant]} px-6 py-3 rounded-lg items-center justify-center ${
+        disabled ? 'opacity-50' : ''
+      } ${className}`}
+      onPress={onPress}
+      disabled={disabled || loading}
+    >
+      {loading ? (
+        <ActivityIndicator color={variant === 'outline' ? '#4982BB' : '#FFFFFF'} />
+      ) : (
+        <Text className={`text-base font-semibold ${textStyles[variant]}`}>
+          {title}
+        </Text>
+      )}
+    </TouchableOpacity>
+  )
+}
+\`\`\`
+
+### components/ui/TextInput.tsx
+\`\`\`typescript
+import React from 'react'
+import { TextInput as RNTextInput, View, Text } from 'react-native'
+
+interface TextInputProps {
+  label?: string
+  placeholder?: string
+  value: string
+  onChangeText: (text: string) => void
+  secureTextEntry?: boolean
+  error?: string
+  className?: string
+}
+
+export default function TextInput({
+  label,
+  placeholder,
+  value,
+  onChangeText,
+  secureTextEntry = false,
+  error,
+  className = '',
+}: TextInputProps) {
+  return (
+    <View className={`mb-4 ${className}`}>
+      {label && (
+        <Text className="text-sm font-semibold text-neutral-dark mb-2">
+          {label}
+        </Text>
+      )}
+      <RNTextInput
+        className={`bg-input-bg border border-border rounded-lg px-4 py-3 text-base ${
+          error ? 'border-error' : ''
+        }`}
+        placeholder={placeholder}
+        placeholderTextColor="#9CA3AF"
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={secureTextEntry}
+      />
+      {error && <Text className="text-xs text-error mt-1">{error}</Text>}
+    </View>
+  )
+}
 \`\`\`
 
 ## 11. Firebase Data Schemas
@@ -1175,13 +1317,13 @@ The recommendation is to **integrate all roles into one unified app** with role-
 
 **Flow:**
 \`\`\`
-1. Login Screen
+1. Login Screen (app/(auth)/sign-in.tsx)
    ↓
-2. Role Selection (Patient/Caregiver/Both)
+2. Role Selection (app/(auth)/role-selection.tsx)
    ↓
-3. Role-based Navigation
-   ├── Patient Role → Patient Navigator (Dashboard, Analytics, Rehab, Connections, Settings)
-   └── Caregiver Role → Caregiver Navigator (Care Dashboard, My Patients, Alerts, Reports, Settings)
+3. Role-based Navigation (app/(app)/_layout.tsx)
+   ├── Patient Role → Dashboard, Analytics, Rehab, Connections, Settings
+   └── Caregiver Role → Care Dashboard, My Patients, Alerts, Reports, Settings
 
 4. Switching Roles
    - Settings page allows role switching
@@ -1225,21 +1367,21 @@ eas build --platform android --auto-submit
 
 ## 14. Environment Variables (.env.example)
 \`\`\`
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_auth_domain
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_storage_bucket
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
+EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 # App Configuration
-APP_NAME=GabAI Sense Guard
-APP_VERSION=1.0.0
+EXPO_PUBLIC_APP_NAME=GabAI Sense Guard
+EXPO_PUBLIC_APP_VERSION=1.0.0
 
 # Feature Flags
-ENABLE_3D_VISUALIZATION=true
-ENABLE_CAREGIVER_FEATURES=true
-ENABLE_PUSH_NOTIFICATIONS=true
+EXPO_PUBLIC_ENABLE_3D_VISUALIZATION=true
+EXPO_PUBLIC_ENABLE_CAREGIVER_FEATURES=true
+EXPO_PUBLIC_ENABLE_PUSH_NOTIFICATIONS=true
 \`\`\`
 
 ## 15. Performance Optimization
@@ -1247,17 +1389,22 @@ ENABLE_PUSH_NOTIFICATIONS=true
 ### Image Optimization
 - Use PNG for UI assets
 - WebP for complex graphics
-- Lazy load images in lists
+- Lazy load images in lists using expo-image
 
 ### Data Fetching
 - Implement pagination for large datasets
-- Cache frequently accessed data
+- Cache frequently accessed data using AsyncStorage
 - Use Firebase Realtime listeners for live updates
 
 ### 3D Optimization
 - Simplify foot geometry
 - Use LOD (Level of Detail) models
 - Implement culling for off-screen objects
+
+### NativeWind Optimization
+- Use className prop for styling (compiled at build time)
+- Avoid inline styles when possible
+- Use Tailwind's utility classes for consistent spacing
 
 ## 16. Testing Strategy
 
@@ -1271,11 +1418,48 @@ npm install --save-dev @testing-library/react-native jest
 npm install --save-dev detox detox-cli
 \`\`\`
 
+## 17. Development Workflow
+
+### Running the App
+\`\`\`bash
+# Start development server
+npm start
+
+# Run on Android
+npm run android
+
+# Run on iOS
+npm run ios
+
+# Run on Web
+npm run web
+\`\`\`
+
+### Building Native Projects
+\`\`\`bash
+# Generate native projects
+npx expo prebuild
+
+# Clean and rebuild
+npx expo prebuild --clean
+\`\`\`
+
+### TypeScript Path Aliases
+Use `@/` prefix for imports:
+\`\`\`typescript
+import { useAuth } from '@/context/auth-context'
+import Button from '@/components/ui/Button'
+import { getPressureHistory } from '@/utils/firestore'
+\`\`\`
+
 ---
 
 ## Summary
 
 This comprehensive guide provides everything needed to build GabAI Sense Guard as a React Native app with:
+- **Expo Router** for file-based navigation
+- **NativeWind (Tailwind CSS)** for styling
+- **Expo SDK 54** with React Native 0.81.5
 - Unified authentication for both patients and caregivers
 - Role-based navigation and features
 - Real-time pressure visualization with React Three Fiber

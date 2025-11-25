@@ -5,14 +5,15 @@
 /* Design tokens */
 :root {
   /* Colors */
-  --color-primary: #e7a38d; /* Powder Blush */
-  --color-secondary: #4982bb; /* Steel Blue */
-  --color-tertiary: #2a2d34; /* Light Gray */
-
+  --color-primary: #4982BB; /* Primary Blue */
+  --color-accent: #e7a38d; /* Terracotta */
+  --color-success: #10B981; /* Success Green */
+  --color-warning: #F59E0B; /* Warning Orange */
+  --color-error: #EF4444; /* Error Red */
 
   /* Fonts */
-  --font-heading: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
-  --font-body: 'Roboto', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-heading: 'Inter', system-ui;
+  --font-body: 'Roboto', system-ui;
 }
 
 /* Web defaults (RN ignores these, but web preview will use them) */

@@ -1,7 +1,17 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
-    "source.organizeImports": "explicit",
-    "source.sortMembers": "explicit"
+  "files.associations": {
+    "metro.config.js": "javascript",
+    "tailwind.config.js": "javascript",
+    "babel.config.js": "javascript"
+  },
+  "material-icon-theme.files.associations": {
+    "metro.config.js": "metro",
+    "tailwind.config.js": "tailwind",
+    "babel.config.js": "babel"
+  },
+  "vscode-icons.fileAssociations": {
+    "metro.config.js": "metro",
+    "tailwind.config.js": "tailwind",
+    "babel.config.js": "babel"
   }
 }
