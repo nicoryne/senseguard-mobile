@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import ActivityChart from '../../../components/charts/ActivityChart';
 import GaitQualityChart from '../../../components/charts/GaitQualityChart';
-import GaitVisualization from '../../../components/threed/GaitVisualization';
+import GaitVisualization from '../../../components/3d/GaitVisualization';
 import { COLORS } from '../../../lib/colors';
 import { FONTS } from '../../../lib/fonts';
 

@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import BackHeader from '../../components/headers/BackHeader';
 import MetricCard from '../../components/cards/MetricCard';
-import PressureHeatmap from '../../components/threed/PressureHeatmap';
+import PressureHeatmap from '../../components/3d/PressureHeatmap';
 import { useCaregiverData } from '../../hooks/useCaregiver';
 import { COLORS } from '../../lib/colors';
 import { FONTS } from '../../lib/fonts';

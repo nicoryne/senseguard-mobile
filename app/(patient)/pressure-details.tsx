@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import BackHeader from '../../components/headers/BackHeader';
 import MetricCard from '../../components/cards/MetricCard';
 import PressureDistributionChart from '../../components/charts/PressureDistributionChart';
-import PressureHeatmap from '../../components/threed/PressureHeatmap';
+import PressureHeatmap from '../../components/3d/PressureHeatmap';
 import { usePressureData } from '../../hooks/usePressureData';
 import { COLORS } from '../../lib/colors';
 import { FONTS } from '../../lib/fonts';

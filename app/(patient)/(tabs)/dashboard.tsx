@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 
 import AlertCard from '../../../components/cards/AlertCard';
 import MetricCard from '../../../components/cards/MetricCard';
-import FootVisualization from '../../../components/threed/FootVisualization';
+import FootVisualization from '../../../components/3d/FootVisualization';
 import GaitQualityChart from '../../../components/charts/GaitQualityChart';
 import { useCaregiverData } from '../../../hooks/useCaregiver';
 import { usePressureData } from '../../../hooks/usePressureData';
