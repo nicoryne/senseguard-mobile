@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens */
+:root {
+  /* Colors */
+  --color-primary: #e7a38d; /* Powder Blush */
+  --color-secondary: #4982bb; /* Steel Blue */
+  --color-tertiary: #2a2d34; /* Light Gray */
+
+
+  /* Fonts */
+  --font-heading: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-body: 'Roboto', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+/* Web defaults (RN ignores these, but web preview will use them) */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-primary);
+}
