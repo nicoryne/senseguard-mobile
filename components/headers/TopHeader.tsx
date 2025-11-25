@@ -12,6 +12,7 @@ interface Props {
   actionLabel?: string;
   onActionPress?: () => void;
   showLogo?: boolean;
+  backgroundType?: 'light' | 'dark';
 }
 
 const TopHeader: React.FC<Props> = ({
@@ -20,31 +21,44 @@ const TopHeader: React.FC<Props> = ({
   actionLabel,
   onActionPress,
   showLogo = false,
-}) => (
-  <View style={styles.container}>
-    <View style={styles.leftSection}>
-      {showLogo && (
-        <View style={styles.logoContainer}>
-          <Logo size={40} />
+  backgroundType = 'light',
+}) => {
+  const isDark = backgroundType === 'dark';
+  const logoVariant = isDark ? 'transparent' : 'default';
+  const titleColor = isDark ? COLORS.neutral.lightest : COLORS.neutral.dark;
+  const subtitleColor = isDark ? 'rgba(255, 255, 255, 0.7)' : COLORS.neutral.medium;
+
+  return (
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View style={styles.leftSection}>
+        {showLogo && (
+          <View style={styles.logoContainer}>
+            <Logo size={40} variant={logoVariant} />
+          </View>
+        )}
+        <View>
+          <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
+          {subtitle ? <Text style={[styles.subtitle, { color: subtitleColor }]}>{subtitle}</Text> : null}
         </View>
-      )}
-      <View>
-        <Text style={styles.title}>{title}</Text>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
+      {actionLabel && onActionPress ? (
+        <Button title={actionLabel} onPress={onActionPress} variant="outline" />
+      ) : null}
     </View>
-    {actionLabel && onActionPress ? (
-      <Button title={actionLabel} onPress={onActionPress} variant="outline" />
-    ) : null}
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    paddingTop: 24,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+  },
+  containerDark: {
+    backgroundColor: COLORS.primary,
   },
   leftSection: {
     flexDirection: 'row',
@@ -57,11 +71,9 @@ const styles = StyleSheet.create({
   },
   title: {
     ...FONTS.h2,
-    color: COLORS.neutral.dark,
   },
   subtitle: {
     ...FONTS.bodySmall,
-    color: COLORS.neutral.medium,
     marginTop: 4,
   },
 });

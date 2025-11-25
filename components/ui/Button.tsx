@@ -10,7 +10,7 @@ import {
 import { COLORS } from '../../lib/colors';
 import { FONTS } from '../../lib/fonts';
 
-type Variant = 'primary' | 'secondary' | 'outline';
+type Variant = 'primary' | 'secondary' | 'outline' | 'danger';
 
 interface ButtonProps {
   title: string;
@@ -47,6 +47,7 @@ const Button: React.FC<ButtonProps> = ({
             style={[
               styles.text,
               variant === 'outline' && { color: COLORS.primary },
+              variant === 'danger' && { color: COLORS.neutral.lightest },
             ]}
           >
             {title}
@@ -82,6 +83,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: COLORS.primary,
+  },
+  danger: {
+    backgroundColor: COLORS.error,
   },
   disabled: {
     opacity: 0.5,
