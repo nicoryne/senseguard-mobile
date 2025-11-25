@@ -37,14 +37,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.surface.tertiary,
     marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   name: {
     ...FONTS.h3,
     color: COLORS.neutral.dark,
+    fontWeight: '600',
   },
   meta: {
     ...FONTS.bodySmall,
     color: COLORS.neutral.medium,
+    marginTop: 2,
   },
   status: {
     alignItems: 'flex-end',
@@ -55,6 +62,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     marginTop: 4,
     textTransform: 'capitalize',
+    fontWeight: '600',
   },
 });
 

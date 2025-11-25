@@ -15,6 +15,7 @@ import FootVisualization from '@/components/3d/FootVisualization'
 import MetricCard from '@/components/cards/MetricCard'
 import AlertCard from '@/components/cards/AlertCard'
 import PatientCard from '@/components/cards/PatientCard'
+import Logo from '@/components/ui/Logo'
 import { COLORS } from '@/lib/colors'
 import { FONTS } from '@/lib/fonts'
 
@@ -38,7 +39,7 @@ export default function DashboardScreen() {
         title: 'Avg Pressure',
         value: latest?.summary.avg ?? 0,
         unit: 'kPa',
-        color: COLORS.accent,
+        color: COLORS.secondary,
       },
     ],
     [latest]
@@ -57,9 +58,14 @@ export default function DashboardScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <View style={styles.hero}>
-          <View>
-            <Text style={styles.greeting}>Welcome back</Text>
-            <Text style={styles.date}>{new Date().toLocaleDateString()}</Text>
+          <View style={styles.heroContent}>
+            <View style={styles.logoContainer}>
+              <Logo size={50} />
+            </View>
+            <View style={styles.heroText}>
+              <Text style={styles.greeting}>Welcome back</Text>
+              <Text style={styles.date}>{new Date().toLocaleDateString()}</Text>
+            </View>
           </View>
         </View>
 
@@ -98,8 +104,8 @@ export default function DashboardScreen() {
               title={stat.title}
               value={String(stat.value)}
               unit={stat.unit}
-              color="primary"
-              icon="barbell"
+              color={idx === 0 ? COLORS.primary : COLORS.secondary}
+              icon={idx === 0 ? "barbell" : "stats-chart"}
             />
           ))}
         </View>
@@ -129,9 +135,14 @@ export default function DashboardScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <View style={styles.hero}>
-        <View>
-          <Text style={styles.greeting}>Care Dashboard</Text>
-          <Text style={styles.date}>Monitor your patients' progress</Text>
+        <View style={styles.heroContent}>
+          <View style={styles.logoContainer}>
+            <Logo size={50} />
+          </View>
+          <View style={styles.heroText}>
+            <Text style={styles.greeting}>Care Dashboard</Text>
+            <Text style={styles.date}>Monitor your patients' progress</Text>
+          </View>
         </View>
       </View>
 
@@ -188,10 +199,20 @@ const styles = StyleSheet.create({
   },
   hero: {
     padding: 20,
+    paddingTop: 24,
+    paddingBottom: 24,
     backgroundColor: COLORS.primary,
+  },
+  heroContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 16,
+  },
+  logoContainer: {
+    opacity: 0.95,
+  },
+  heroText: {
+    flex: 1,
   },
   greeting: {
     ...FONTS.h2,
@@ -200,7 +221,7 @@ const styles = StyleSheet.create({
   },
   date: {
     ...FONTS.bodySmall,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255, 255, 255, 0.85)',
   },
   section: {
     padding: 20,
@@ -227,6 +248,11 @@ const styles = StyleSheet.create({
   },
   toggleItemActive: {
     backgroundColor: COLORS.primary,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   toggleText: {
     ...FONTS.bodySmall,
@@ -245,13 +271,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.surface.background,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.surface.tertiary,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   statValue: {
     ...FONTS.h3,
     color: COLORS.primary,
     marginBottom: 4,
+    fontWeight: '700',
   },
   statLabel: {
     ...FONTS.bodySmall,

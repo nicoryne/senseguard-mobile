@@ -1,7 +1,8 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
 import Button from '../../components/ui/Button';
+import Logo from '../../components/ui/Logo';
 import { APP_NAME } from '../../lib/constants';
 import { COLORS } from '../../lib/colors';
 import { FONTS } from '../../lib/fonts';
@@ -12,6 +13,9 @@ const OnboardingScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.hero}>
+        <View style={styles.logoContainer}>
+          <Logo size={100} />
+        </View>
         <Text style={styles.kicker}>AI-powered foot health</Text>
         <Text style={styles.title}>{APP_NAME}</Text>
         <Text style={styles.subtitle}>
@@ -19,17 +23,15 @@ const OnboardingScreen = () => {
           to prevent diabetic neuropathy.
         </Text>
       </View>
-      <Image
-        source={{ uri: 'https://placehold.co/320x200' }}
-        style={styles.image}
-      />
-      <Button
-        title="Get started"
-        onPress={() => router.push('/(auth)/role-selection')}
-      />
-      <Link href="/(auth)/login" style={styles.link}>
-        Already have an account? Sign in
-      </Link>
+      <View style={styles.actions}>
+        <Button
+          title="Get started"
+          onPress={() => router.push('/(auth)/role-selection')}
+        />
+        <Link href="/(auth)/sign-in" style={styles.link}>
+          <Text style={styles.linkText}>Already have an account? Sign in</Text>
+        </Link>
+      </View>
     </View>
   );
 };
@@ -42,36 +44,47 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral.lighter,
   },
   hero: {
-    marginTop: 80,
+    marginTop: 60,
+    alignItems: 'center',
+  },
+  logoContainer: {
+    marginBottom: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   kicker: {
     ...FONTS.bodySmall,
     color: COLORS.primary,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.2,
+    fontWeight: '600',
+    marginBottom: 8,
   },
   title: {
     ...FONTS.h1,
     color: COLORS.neutral.dark,
-    marginTop: 12,
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   subtitle: {
     ...FONTS.body,
     color: COLORS.neutral.medium,
+    textAlign: 'center',
+    lineHeight: 24,
+    paddingHorizontal: 8,
   },
-  image: {
+  actions: {
     width: '100%',
-    height: 220,
-    borderRadius: 20,
-    marginVertical: 40,
-    backgroundColor: COLORS.surface.secondary,
+    marginBottom: 32,
   },
   link: {
-    marginTop: 16,
-    textAlign: 'center',
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  linkText: {
     ...FONTS.bodySmall,
     color: COLORS.primary,
+    fontWeight: '600',
   },
 });
 

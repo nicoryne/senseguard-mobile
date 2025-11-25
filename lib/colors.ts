@@ -1,5 +1,6 @@
 export const COLORS = {
   primary: '#4982BB',
+  secondary: '#e7a38d', // Also available as accent for backward compatibility
   accent: '#e7a38d',
   success: '#10B981',
   warning: '#F59E0B',

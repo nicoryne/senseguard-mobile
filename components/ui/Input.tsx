@@ -13,11 +13,13 @@ import { FONTS } from '../../lib/fonts';
 interface InputProps extends TextInputProps {
   label?: string;
   helperText?: string;
+  error?: string;
 }
 
 const Input: React.FC<InputProps> = ({
   label,
   helperText,
+  error,
   style,
   ...rest
 }) => {
@@ -25,11 +27,19 @@ const Input: React.FC<InputProps> = ({
     <View style={styles.container}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <TextInput
-        style={[styles.input, style]}
+        style={[
+          styles.input,
+          error && styles.inputError,
+          style,
+        ]}
         placeholderTextColor={COLORS.neutral.medium}
         {...rest}
       />
-      {helperText ? <Text style={styles.helper}>{helperText}</Text> : null}
+      {error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : helperText ? (
+        <Text style={styles.helper}>{helperText}</Text>
+      ) : null}
     </View>
   );
 };
@@ -54,9 +64,18 @@ const styles = StyleSheet.create({
     ...FONTS.body,
     color: COLORS.neutral.dark,
   },
+  inputError: {
+    borderColor: COLORS.error,
+    borderWidth: 1.5,
+  },
   helper: {
     ...FONTS.caption,
     color: COLORS.neutral.medium,
+    marginTop: 4,
+  },
+  errorText: {
+    ...FONTS.caption,
+    color: COLORS.error,
     marginTop: 4,
   },
 });

@@ -39,6 +39,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   header: {
     flexDirection: 'row',
@@ -49,10 +54,12 @@ const styles = StyleSheet.create({
   title: {
     ...FONTS.bodySmall,
     color: COLORS.neutral.medium,
+    fontWeight: '600',
   },
   value: {
     ...FONTS.h2,
     color: COLORS.neutral.dark,
+    fontWeight: '700',
   },
   unit: {
     ...FONTS.bodySmall,

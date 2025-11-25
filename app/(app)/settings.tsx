@@ -1,7 +1,9 @@
 import React from 'react'
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import Button from '@/components/ui/Button'
+import Logo from '@/components/ui/Logo'
 import RoleSwitcher from '@/components/ui/RoleSwitcher'
 import { useAuth } from '@/context/auth-context'
 import { COLORS } from '@/lib/colors'
@@ -13,7 +15,10 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+      <View style={styles.header}>
+        <Logo size={50} />
+        <Text style={styles.title}>Settings</Text>
+      </View>
 
       <RoleSwitcher />
 
@@ -32,23 +37,35 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => router.push('/(app)/settings/profile')}
+          activeOpacity={0.7}
         >
-          <Text style={styles.menuText}>Profile</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <View style={styles.menuItemLeft}>
+            <Ionicons name="person" size={20} color={COLORS.primary} />
+            <Text style={styles.menuText}>Profile</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={COLORS.neutral.medium} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => router.push('/(app)/settings/notifications')}
+          activeOpacity={0.7}
         >
-          <Text style={styles.menuText}>Notifications</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <View style={styles.menuItemLeft}>
+            <Ionicons name="notifications" size={20} color={COLORS.primary} />
+            <Text style={styles.menuText}>Notifications</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={COLORS.neutral.medium} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => router.push('/(app)/settings/about')}
+          activeOpacity={0.7}
         >
-          <Text style={styles.menuText}>About</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <View style={styles.menuItemLeft}>
+            <Ionicons name="information-circle" size={20} color={COLORS.secondary} />
+            <Text style={styles.menuText}>About</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={COLORS.neutral.medium} />
         </TouchableOpacity>
       </View>
 
@@ -63,32 +80,53 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: COLORS.neutral.lighter,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 24,
+  },
   title: {
     ...FONTS.h2,
     color: COLORS.neutral.dark,
-    marginBottom: 24,
+    flex: 1,
   },
   card: {
     backgroundColor: COLORS.surface.background,
     borderRadius: 16,
-    padding: 16,
+    padding: 20,
     marginBottom: 24,
     gap: 12,
+    borderWidth: 1,
+    borderColor: COLORS.surface.tertiary,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   label: {
     ...FONTS.bodySmall,
     color: COLORS.neutral.medium,
+    fontWeight: '600',
   },
   value: {
     ...FONTS.body,
     color: COLORS.neutral.dark,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   section: {
     backgroundColor: COLORS.surface.background,
     borderRadius: 16,
     marginBottom: 24,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.surface.tertiary,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   menuItem: {
     flexDirection: 'row',
@@ -98,13 +136,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.surface.tertiary,
   },
+  menuItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
   menuText: {
     ...FONTS.body,
     color: COLORS.neutral.dark,
-  },
-  menuArrow: {
-    ...FONTS.h2,
-    color: COLORS.neutral.medium,
   },
 })
 

@@ -66,12 +66,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   primary: {
     backgroundColor: COLORS.primary,
   },
   secondary: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.secondary,
   },
   outline: {
     backgroundColor: 'transparent',

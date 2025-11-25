@@ -62,10 +62,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 8,
     paddingBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 8,
   },
   tab: {
     alignItems: 'center',
     flex: 1,
+    paddingVertical: 4,
   },
   tabLabel: {
     ...FONTS.bodySmall,

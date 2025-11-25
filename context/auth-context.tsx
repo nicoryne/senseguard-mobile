@@ -107,35 +107,45 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   const signUp = useCallback(
     async (email: string, password: string, role: string, userData: any) => {
-      const { createUserWithEmailAndPassword } = await import('firebase/auth')
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      await createUserProfile(userCredential.user.uid, {
-        email,
-        role,
-        ...userData,
-        createdAt: new Date(),
-      })
-      const profile = await getUserProfile(userCredential.user.uid)
-      setUserRole(role as UserRole)
-      setSelectedRole(role as UserRole)
-      setUserData(profile)
-      await AsyncStorage.setItem(ROLE_STORAGE_KEY, role)
+      try {
+        const { createUserWithEmailAndPassword } = await import('firebase/auth')
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        await createUserProfile(userCredential.user.uid, {
+          email,
+          role,
+          ...userData,
+          createdAt: new Date(),
+        })
+        const profile = await getUserProfile(userCredential.user.uid)
+        setUserRole(role as UserRole)
+        setSelectedRole(role as UserRole)
+        setUserData(profile)
+        await AsyncStorage.setItem(ROLE_STORAGE_KEY, role)
+      } catch (error) {
+        // Re-throw error so form can handle it
+        throw error
+      }
     },
     []
   )
 
   const logIn = useCallback(async (email: string, password: string) => {
-    const { signInWithEmailAndPassword } = await import('firebase/auth')
-    await signInWithEmailAndPassword(auth, email, password)
-    if (auth.currentUser) {
-      const profile = await getUserProfile(auth.currentUser.uid)
-      const role = (profile?.role as UserRole) || null
-      setUserRole(role)
-      setSelectedRole(role)
-      setUserData(profile)
-      if (role) {
-        await AsyncStorage.setItem(ROLE_STORAGE_KEY, role)
+    try {
+      const { signInWithEmailAndPassword } = await import('firebase/auth')
+      await signInWithEmailAndPassword(auth, email, password)
+      if (auth.currentUser) {
+        const profile = await getUserProfile(auth.currentUser.uid)
+        const role = (profile?.role as UserRole) || null
+        setUserRole(role)
+        setSelectedRole(role)
+        setUserData(profile)
+        if (role) {
+          await AsyncStorage.setItem(ROLE_STORAGE_KEY, role)
+        }
       }
+    } catch (error) {
+      // Re-throw error so form can handle it
+      throw error
     }
   }, [])
 
