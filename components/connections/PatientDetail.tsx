@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, Modal, Pressable, SafeAreaView, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { PatientSummary } from '@/types/user';
 import Card from '../ui/Card';
@@ -13,6 +14,7 @@ interface PatientDetailProps {
 }
 
 export default function PatientDetail({ patient, visible, onClose }: PatientDetailProps) {
+  const insets = useSafeAreaInsets();
   const { history: pressureHistory } = usePressureData();
   const { activity: gaitActivity } = useGaitData();
   const screenWidth = Dimensions.get('window').width;
@@ -73,8 +75,15 @@ export default function PatientDetail({ patient, visible, onClose }: PatientDeta
       <SafeAreaView className="flex-1 bg-[#F8F9FA]">
         <View className="flex-1">
           {/* Header */}
-          <View className="bg-white px-6 py-4 flex-row items-center border-b border-[#E5E7EB]">
-            <Pressable onPress={onClose} className="mr-4">
+          <View 
+            className="bg-white px-6 flex-row items-center border-b border-[#E5E7EB]"
+            style={{ paddingTop: Math.max(insets.top, 32), paddingBottom: 16 }}
+          >
+            <Pressable 
+              onPress={onClose} 
+              className="mr-4"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <Ionicons name="close" size={24} color="#2A2D34" />
             </Pressable>
             <Text className="text-xl font-bold text-[#2A2D34] flex-1" style={{ fontFamily: 'Inter' }}>

@@ -31,7 +31,7 @@ export default function PageHeader({
 
   return (
     <LinearGradient
-      colors={['#4982BB', '#2A2D34', '#4982BB']}
+      colors={['#E7A38D', '#FF7F56']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       className="px-4 py-4"
@@ -46,7 +46,7 @@ export default function PageHeader({
         )}
         <Text className="text-white font-bold text-2xl" style={{ fontFamily: 'Inter' }}>{title}</Text>
         {subtitle && (
-          <Text className="text-[#a0aec0] text-sm mt-1" style={{ fontFamily: 'Roboto' }}>{subtitle}</Text>
+          <Text className="text-white text-sm mt-1" style={{ fontFamily: 'Roboto' }}>{subtitle}</Text>
         )}
       </View>
       {showLogo && (

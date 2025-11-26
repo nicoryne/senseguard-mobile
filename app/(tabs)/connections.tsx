@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, Platform } from 'react-native';
+import { ScrollView, View, Text, Platform, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 import { mockPatients, caregiverProfile } from '@/lib/mock-data';
 import CaregiverRow from '@/components/connections/CaregiverRow';
 import PatientRow from '@/components/connections/PatientRow';
 import CaregiverDetail from '@/components/connections/CaregiverDetail';
 import PatientDetail from '@/components/connections/PatientDetail';
+import AddConnectionModal from '@/components/connections/AddConnectionModal';
 import { CaregiverProfile, PatientSummary } from '@/types/user';
 import FAB from '@/components/ui/FAB';
 import PageHeader from '@/components/ui/PageHeader';
@@ -15,6 +17,8 @@ export default function ConnectionsScreen() {
   const [selectedPatient, setSelectedPatient] = useState<PatientSummary | null>(null);
   const [caregiverModalVisible, setCaregiverModalVisible] = useState(false);
   const [patientModalVisible, setPatientModalVisible] = useState(false);
+  const [addCaregiverModalVisible, setAddCaregiverModalVisible] = useState(false);
+  const [addPatientModalVisible, setAddPatientModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
   const bottomPadding = tabBarHeight + insets.bottom + 20;
@@ -32,6 +36,26 @@ export default function ConnectionsScreen() {
     setPatientModalVisible(true);
   };
 
+  const handleAddCaregiver = () => {
+    setAddCaregiverModalVisible(true);
+  };
+
+  const handleAddPatient = () => {
+    setAddPatientModalVisible(true);
+  };
+
+  const handleCaregiverAdded = (data: { name: string; email: string; phone: string; notes?: string }) => {
+    // TODO: Implement actual API call to add caregiver
+    console.log('Adding caregiver:', data);
+    // For now, just close the modal
+  };
+
+  const handlePatientAdded = (data: { name: string; email: string; phone: string; notes?: string }) => {
+    // TODO: Implement actual API call to add patient
+    console.log('Adding patient:', data);
+    // For now, just close the modal
+  };
+
   return (
     <View className="flex-1 bg-[#F8F9FA]">
       <PageHeader 
@@ -45,9 +69,18 @@ export default function ConnectionsScreen() {
 
         {/* Caregivers Section */}
         <View className="mb-6">
-          <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
-            Caregivers
-          </Text>
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-lg font-bold text-[#2A2D34]" style={{ fontFamily: 'Inter' }}>
+              Caregivers
+            </Text>
+            <TouchableOpacity
+              onPress={handleAddCaregiver}
+              className="w-10 h-10 rounded-full bg-[#4982BB] items-center justify-center"
+              activeOpacity={0.8}
+            >
+              <Feather name="user-plus" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
           {caregivers.length > 0 ? (
             caregivers.map((caregiver) => (
               <CaregiverRow
@@ -57,7 +90,7 @@ export default function ConnectionsScreen() {
               />
             ))
           ) : (
-            <View className="bg-white rounded-xl p-6 items-center">
+            <View className="bg-white rounded-xl p-6 items-center mb-3">
               <Text className="text-sm text-[#6B7280]" style={{ fontFamily: 'Roboto' }}>
                 No caregivers connected
               </Text>
@@ -67,9 +100,18 @@ export default function ConnectionsScreen() {
 
         {/* Patients Section */}
         <View className="mb-6">
-          <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
-            Patients
-          </Text>
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-lg font-bold text-[#2A2D34]" style={{ fontFamily: 'Inter' }}>
+              Patients
+            </Text>
+            <TouchableOpacity
+              onPress={handleAddPatient}
+              className="w-10 h-10 rounded-full bg-[#4982BB] items-center justify-center"
+              activeOpacity={0.8}
+            >
+              <Feather name="user-plus" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
           {mockPatients.length > 0 ? (
             mockPatients.map((patient) => (
               <PatientRow
@@ -79,7 +121,7 @@ export default function ConnectionsScreen() {
               />
             ))
           ) : (
-            <View className="bg-white rounded-xl p-6 items-center">
+            <View className="bg-white rounded-xl p-6 items-center mb-3">
               <Text className="text-sm text-[#6B7280]" style={{ fontFamily: 'Roboto' }}>
                 No patients connected
               </Text>
@@ -104,6 +146,18 @@ export default function ConnectionsScreen() {
           setPatientModalVisible(false);
           setSelectedPatient(null);
         }}
+      />
+      <AddConnectionModal
+        visible={addCaregiverModalVisible}
+        onClose={() => setAddCaregiverModalVisible(false)}
+        type="caregiver"
+        onAdd={handleCaregiverAdded}
+      />
+      <AddConnectionModal
+        visible={addPatientModalVisible}
+        onClose={() => setAddPatientModalVisible(false)}
+        type="patient"
+        onAdd={handlePatientAdded}
       />
 
       {/* Emergency FAB */}

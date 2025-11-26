@@ -12,7 +12,7 @@ export default function FAB({ caregiverPhone }: FABProps) {
   const [menuVisible, setMenuVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPosition = tabBarHeight + insets.bottom + 16;
+  const bottomPosition = insets.bottom;
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -35,7 +35,7 @@ export default function FAB({ caregiverPhone }: FABProps) {
     <>
       <Pressable
         onPress={handlePress}
-        className="absolute right-6 w-16 h-16 rounded-full bg-[#4982BB] items-center justify-center shadow-lg active:opacity-80 z-50"
+        className="absolute right-6 w-16 h-16  rounded-full bg-[#4982BB] items-center justify-center shadow-lg active:opacity-80 z-50"
         style={{
           bottom: bottomPosition,
           shadowColor: '#4982BB',

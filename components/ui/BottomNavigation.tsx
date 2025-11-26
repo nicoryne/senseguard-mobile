@@ -35,7 +35,7 @@ export default function BottomNavigation() {
   }
 
   return (
-    <View className="bg-white border-t border-border flex-row pb-8">
+    <View className="bg-white border-t border-border flex-row pb-4">
       {visibleTabs.map((tab) => {
         const active = isActive(tab.route)
         return (

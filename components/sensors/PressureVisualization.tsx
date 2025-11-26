@@ -35,18 +35,26 @@ export default function PressureVisualization({
       data[5] || 0,                          // Toes
     ];
 
-    // Foot SVG path from foot-svgrepo-com.svg (main foot shape only, no toe circles)
-    // Original viewBox: 0 0 24 24, scaled and positioned for our use
-    const footPath = "M7.95965,7.25709 C9.35656,6.20969 11.3117,5.74588 13.2081,6.13844 C16.9707,6.91731 18.9332,9.929 18.9989,13.6782 C19.0523,16.7248 17.1181,20.4774 14.1763,21.6909 C12.4161,22.417 10.1297,21.6748 9.41342,19.8177 C9.14612,19.1247 9.1986562,18.4516488 9.31077943,17.7743923 L9.3915,17.322 C9.44945,17.0085 9.50776,16.6931 9.541,16.3732 C9.608425,15.724225 9.23701,15.3203312 8.76829234,14.9854703 L8.52740615,14.8229775 L7.97239,14.4721 L7.7056577,14.2896426 C7.07520406,13.838725 6.4085,13.19665 6.13179,12.0511 C5.64736,10.0455 6.54109,8.32073 7.95965,7.25709 Z";
+    // Foot SVG path from foot.svg (viewBox: 0 0 100 100)
+    // Main foot shape path
+    const footPath = "M72.903,74.043c-1.387-2.237-2.202-4.867-2.202-7.693c0-2.464,0.616-4.782,1.692-6.82l-0.034-0.051c2.168-3.252,3.436-7.155,3.436-11.356c0-11.326-9.182-20.507-20.507-20.507c-11.326,0-20.507,9.181-20.507,20.507c0,2.212,0.36,4.338,1.009,6.335c0.436,1.792,1.139,3.475,2.068,5.011l-0.096,0.055l14.854,25.729c1.568,4.64,5.947,7.984,11.115,7.984c6.484,0,11.743-5.256,11.743-11.741c0-2.813-0.992-5.394-2.643-7.416L72.903,74.043z";
 
-    // Pressure zones on foot (adjusted for the new SVG path)
-    // Coordinates are relative to the 24x24 viewBox, scaled to our 100x100 viewBox
+    // Toe circles from the SVG (for reference, we'll render them too)
+    const toeCircles = [
+      { cx: 28.549, cy: 35.885, r: 4.342 },
+      { cx: 65.794, cy: 15.531, r: 8.767 },
+      { cx: 47.712, cy: 18.329, r: 5.469 },
+      { cx: 36.161, cy: 26.693, r: 4.342 },
+    ];
+
+    // Pressure zones on foot (adjusted for 100x100 viewBox)
+    // Coordinates based on anatomical positions in the SVG
     const pressureZones = [
-      { x: side === 'left' ? 12 : 12, y: 20, radius: 3 },       // Heel (centered, bottom)
-      { x: 12, y: 14, radius: 2.5 },                            // Midfoot/Arch (center)
-      { x: side === 'left' ? 15 : 9, y: 10, radius: 2 },         // Forefoot (lateral)
-      { x: side === 'left' ? 13.5 : 10.5, y: 10, radius: 2 },    // Forefoot (medial)
-      { x: side === 'left' ? 16 : 8, y: 6, radius: 1.5 },      // Toes (front)
+      { x: side === 'left' ? 72.903 : 27.097, y: 74.043, radius: 8 },      // Heel (bottom of foot path)
+      { x: side === 'left' ? 55 : 45, y: 50, radius: 6 },                 // Midfoot/Arch (center)
+      { x: side === 'left' ? 65.794 : 34.206, y: 15.531, radius: 5 },     // Forefoot (lateral - using toe circle position)
+      { x: side === 'left' ? 47.712 : 52.288, y: 18.329, radius: 5 },     // Forefoot (medial - using toe circle position)
+      { x: side === 'left' ? 36.161 : 63.839, y: 26.693, radius: 4 },     // Toes (using toe circle position)
     ];
 
     return (
@@ -55,7 +63,7 @@ export default function PressureVisualization({
           {side === 'left' ? 'Left Foot' : 'Right Foot'}
         </Text>
         <View className="relative">
-          <Svg width="120" height="120" viewBox="0 0 24 24">
+          <Svg width="120" height="120" viewBox="0 0 100 100">
             <Defs>
               <LinearGradient id={`footGradient-${side}`} x1="0%" y1="0%" x2="0%" y2="100%">
                 <Stop offset="0%" stopColor="#F8F9FA" stopOpacity="1" />
@@ -67,9 +75,20 @@ export default function PressureVisualization({
               d={footPath}
               fill={`url(#footGradient-${side})`}
               stroke="#D1D5DB"
-              strokeWidth="0.3"
-              transform={side === 'right' ? 'scale(-1, 1) translate(-24, 0)' : ''}
+              strokeWidth="0.5"
+              transform={side === 'right' ? 'scale(-1, 1) translate(-100, 0)' : ''}
             />
+            {/* Toe circles from SVG (subtle, for anatomical reference) */}
+            {toeCircles.map((circle, idx) => (
+              <Circle
+                key={`toe-${idx}`}
+                cx={side === 'right' ? 100 - circle.cx : circle.cx}
+                cy={circle.cy}
+                r={circle.r * 0.3}
+                fill="#D1D5DB"
+                opacity="0.2"
+              />
+            ))}
             {/* Pressure zones as heatmap overlays */}
             {pressureZones.map((zone, index) => {
               const pressure = zonePressures[index] || 0;
@@ -96,9 +115,9 @@ export default function PressureVisualization({
               d={footPath}
               fill="none"
               stroke="#9CA3AF"
-              strokeWidth="0.2"
+              strokeWidth="0.4"
               opacity="0.3"
-              transform={side === 'right' ? 'scale(-1, 1) translate(-24, 0)' : ''}
+              transform={side === 'right' ? 'scale(-1, 1) translate(-100, 0)' : ''}
             />
           </Svg>
         </View>
