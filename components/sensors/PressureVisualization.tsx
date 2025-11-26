@@ -35,18 +35,18 @@ export default function PressureVisualization({
       data[5] || 0,                          // Toes
     ];
 
-    // Realistic foot SVG path (plantar view - bottom of foot)
-    const footPath = side === 'left' 
-      ? "M 30 15 Q 25 12 20 15 L 15 20 Q 10 25 12 35 L 15 50 Q 18 60 25 68 L 35 72 Q 45 74 55 72 L 65 68 Q 72 60 75 50 L 78 35 Q 80 25 75 20 L 70 15 Q 65 12 60 15 L 55 18 Q 50 20 45 18 L 40 16 Q 35 14 30 15 Z"
-      : "M 70 15 Q 75 12 80 15 L 85 20 Q 90 25 88 35 L 85 50 Q 82 60 75 68 L 65 72 Q 55 74 45 72 L 35 68 Q 28 60 25 50 L 22 35 Q 20 25 25 20 L 30 15 Q 35 12 40 15 L 45 18 Q 50 20 55 18 L 60 16 Q 65 14 70 15 Z";
+    // Foot SVG path from foot-svgrepo-com.svg (main foot shape only, no toe circles)
+    // Original viewBox: 0 0 24 24, scaled and positioned for our use
+    const footPath = "M7.95965,7.25709 C9.35656,6.20969 11.3117,5.74588 13.2081,6.13844 C16.9707,6.91731 18.9332,9.929 18.9989,13.6782 C19.0523,16.7248 17.1181,20.4774 14.1763,21.6909 C12.4161,22.417 10.1297,21.6748 9.41342,19.8177 C9.14612,19.1247 9.1986562,18.4516488 9.31077943,17.7743923 L9.3915,17.322 C9.44945,17.0085 9.50776,16.6931 9.541,16.3732 C9.608425,15.724225 9.23701,15.3203312 8.76829234,14.9854703 L8.52740615,14.8229775 L7.97239,14.4721 L7.7056577,14.2896426 C7.07520406,13.838725 6.4085,13.19665 6.13179,12.0511 C5.64736,10.0455 6.54109,8.32073 7.95965,7.25709 Z";
 
-    // Pressure zones on foot (anatomically accurate positions)
+    // Pressure zones on foot (adjusted for the new SVG path)
+    // Coordinates are relative to the 24x24 viewBox, scaled to our 100x100 viewBox
     const pressureZones = [
-      { x: side === 'left' ? 30 : 70, y: 68, radius: 12 },      // Heel
-      { x: 50, y: 55, radius: 10 },                             // Midfoot/Arch
-      { x: side === 'left' ? 60 : 40, y: 35, radius: 9 },       // Forefoot (lateral)
-      { x: side === 'left' ? 55 : 45, y: 35, radius: 9 },       // Forefoot (medial)
-      { x: side === 'left' ? 65 : 35, y: 20, radius: 7 },      // Toes
+      { x: side === 'left' ? 12 : 12, y: 20, radius: 3 },       // Heel (centered, bottom)
+      { x: 12, y: 14, radius: 2.5 },                            // Midfoot/Arch (center)
+      { x: side === 'left' ? 15 : 9, y: 10, radius: 2 },         // Forefoot (lateral)
+      { x: side === 'left' ? 13.5 : 10.5, y: 10, radius: 2 },    // Forefoot (medial)
+      { x: side === 'left' ? 16 : 8, y: 6, radius: 1.5 },      // Toes (front)
     ];
 
     return (
@@ -55,18 +55,20 @@ export default function PressureVisualization({
           {side === 'left' ? 'Left Foot' : 'Right Foot'}
         </Text>
         <View className="relative">
-          <Svg width="120" height="120" viewBox="0 0 100 100">
+          <Svg width="120" height="120" viewBox="0 0 24 24">
             <Defs>
               <LinearGradient id={`footGradient-${side}`} x1="0%" y1="0%" x2="0%" y2="100%">
                 <Stop offset="0%" stopColor="#F8F9FA" stopOpacity="1" />
                 <Stop offset="100%" stopColor="#E5E7EB" stopOpacity="1" />
               </LinearGradient>
             </Defs>
+            {/* Foot silhouette from SVG */}
             <Path
               d={footPath}
               fill={`url(#footGradient-${side})`}
               stroke="#D1D5DB"
-              strokeWidth="1.5"
+              strokeWidth="0.3"
+              transform={side === 'right' ? 'scale(-1, 1) translate(-24, 0)' : ''}
             />
             {/* Pressure zones as heatmap overlays */}
             {pressureZones.map((zone, index) => {
@@ -85,6 +87,7 @@ export default function PressureVisualization({
                   r={radius}
                   fill={color}
                   opacity={opacity}
+                  transform={side === 'right' ? 'scale(-1, 1) translate(-24, 0)' : ''}
                 />
               );
             })}
@@ -93,8 +96,9 @@ export default function PressureVisualization({
               d={footPath}
               fill="none"
               stroke="#9CA3AF"
-              strokeWidth="1"
+              strokeWidth="0.2"
               opacity="0.3"
+              transform={side === 'right' ? 'scale(-1, 1) translate(-24, 0)' : ''}
             />
           </Svg>
         </View>
