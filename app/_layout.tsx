@@ -1,50 +1,48 @@
-import { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { useRouter, useSegments } from 'expo-router';
+import AuthProvider, { useAuth } from '@/context/auth-context';
+import { View, ActivityIndicator } from 'react-native';
 
-import AuthProvider from '../context/auth-context';
-import { COLORS } from '../lib/colors';
-import { useAppFonts } from '../lib/fonts';
-import '../global.css';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const fontsLoaded = useAppFonts();
+function RootLayoutNav() {
+  const { currentUser, loading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
 
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+    if (loading) return;
 
-  if (!fontsLoaded) {
-    return null;
+    const inAuthGroup = segments[0] === '(auth)';
+    const inTabsGroup = segments[0] === '(tabs)';
+
+    if (!currentUser && !inAuthGroup) {
+      router.replace('/(auth)/sign-in');
+    } else if (currentUser && inAuthGroup) {
+      router.replace('/(tabs)/home');
+    }
+  }, [currentUser, loading, segments, router]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-[#F8F9FA]">
+        <ActivityIndicator size="large" color="#4982BB" />
+      </View>
+    );
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: COLORS.neutral.lighter }}>
-      <SafeAreaProvider>
-        <StatusBar style="dark" />
-        <AuthProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: COLORS.neutral.lighter },
-            }}
-          >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(app)" />
-          </Stack>
-        </AuthProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+    </Stack>
   );
 }
 
-
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
+  );
+}
 

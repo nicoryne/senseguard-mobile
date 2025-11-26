@@ -1,129 +1,122 @@
-import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
+import { useState } from 'react';
+import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-import LoginForm from '../../components/forms/LoginForm';
-import Logo from '../../components/ui/Logo';
-import { COLORS } from '../../lib/colors';
-import { FONTS } from '../../lib/fonts';
-import { DESIGN_TOKENS } from '../../lib/design-tokens';
+export default function SignInScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { logIn } = useAuth();
+  const router = useRouter();
 
-const SignInScreen = () => {
+  const handleSignIn = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await logIn(email.trim(), password);
+      router.replace('/(tabs)/home');
+    } catch (error: any) {
+      Alert.alert('Sign In Failed', error.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar style="light" />
-      <LinearGradient
-        colors={DESIGN_TOKENS.colors.primary.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradientBackground}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header Section */}
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <View style={styles.logoBackground}>
-                <Logo size={100} variant="transparent" />
-              </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-[#F8F9FA]"
+    >
+      <ScrollView contentContainerClassName="flex-grow" keyboardShouldPersistTaps="handled">
+        <View className="flex-1 justify-center px-6 py-12">
+          {/* Logo/Header */}
+          <View className="items-center mb-12">
+            <View className="w-24 h-24 rounded-full bg-[#4982BB] items-center justify-center mb-4">
+              <Ionicons name="footsteps" size={48} color="#FFFFFF" />
             </View>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>
-              Sign in to continue managing your health with GabAI Sense Guard
+            <Text className="text-3xl font-bold text-[#2A2D34] mt-4" style={{ fontFamily: 'Inter' }}>
+              SenseGuard
+            </Text>
+            <Text className="text-base text-[#6B7280] mt-2" style={{ fontFamily: 'Roboto' }}>
+              Sign in to continue
             </Text>
           </View>
 
-          {/* Form Card */}
-          <View style={styles.formCard}>
-            <LoginForm />
-          </View>
+          {/* Form */}
+          <View className="space-y-4">
+            <View>
+              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+                Email
+              </Text>
+              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3">
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  className="text-base text-[#2A2D34]"
+                  style={{ fontFamily: 'Roboto' }}
+                />
+              </View>
+            </View>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <Link href="/(auth)/sign-up" style={styles.link}>
-              <Text style={styles.linkText}>Sign up</Text>
-            </Link>
+            <View>
+              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+                Password
+              </Text>
+              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3 flex-row items-center">
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#9CA3AF"
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoComplete="password"
+                  className="flex-1 text-base text-[#2A2D34]"
+                  style={{ fontFamily: 'Roboto' }}
+                />
+                <Pressable onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color="#6B7280"
+                  />
+                </Pressable>
+              </View>
+            </View>
+
+            <Pressable
+              onPress={handleSignIn}
+              disabled={loading}
+              className="bg-[#4982BB] rounded-xl py-4 mt-6 active:opacity-80"
+            >
+              <Text className="text-center text-white font-semibold text-base" style={{ fontFamily: 'Roboto' }}>
+                {loading ? 'Signing in...' : 'Sign In'}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => router.push('/(auth)/sign-up')}
+              className="mt-4"
+            >
+              <Text className="text-center text-[#4982BB] font-semibold text-base" style={{ fontFamily: 'Roboto' }}>
+                Don't have an account? Sign Up
+              </Text>
+            </Pressable>
           </View>
-        </ScrollView>
-      </LinearGradient>
-    </SafeAreaView>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  gradientBackground: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: DESIGN_TOKENS.spacing.xl,
-    justifyContent: 'center',
-    minHeight: '100%',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: DESIGN_TOKENS.spacing['3xl'],
-  },
-  logoContainer: {
-    marginBottom: DESIGN_TOKENS.spacing.xl,
-  },
-  logoBackground: {
-    width: 120,
-    height: 120,
-    borderRadius: DESIGN_TOKENS.radius['2xl'],
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...DESIGN_TOKENS.shadows.xl,
-  },
-  title: {
-    ...DESIGN_TOKENS.typography.h1,
-    color: COLORS.neutral.lightest,
-    marginBottom: DESIGN_TOKENS.spacing.md,
-    textAlign: 'center',
-    fontWeight: '700',
-  },
-  subtitle: {
-    ...DESIGN_TOKENS.typography.body,
-    color: 'rgba(255, 255, 255, 0.9)',
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: DESIGN_TOKENS.spacing.base,
-  },
-  formCard: {
-    backgroundColor: COLORS.surface.background,
-    borderRadius: DESIGN_TOKENS.radius['2xl'],
-    padding: DESIGN_TOKENS.spacing.xl,
-    ...DESIGN_TOKENS.shadows.xl,
-    marginBottom: DESIGN_TOKENS.spacing.xl,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: DESIGN_TOKENS.spacing.base,
-  },
-  footerText: {
-    ...DESIGN_TOKENS.typography.body,
-    color: 'rgba(255, 255, 255, 0.9)',
-  },
-  link: {
-    marginLeft: DESIGN_TOKENS.spacing.xs,
-  },
-  linkText: {
-    ...DESIGN_TOKENS.typography.bodyBold,
-    color: COLORS.neutral.lightest,
-    textDecorationLine: 'underline',
-  },
-});
-
-export default SignInScreen;
+}

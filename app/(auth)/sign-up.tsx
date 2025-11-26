@@ -1,159 +1,220 @@
-import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
 
-import SignupForm from '../../components/forms/SignupForm';
-import Logo from '../../components/ui/Logo';
-import { useAuth } from '../../context/auth-context';
-import { COLORS } from '../../lib/colors';
-import { FONTS } from '../../lib/fonts';
-import { DESIGN_TOKENS } from '../../lib/design-tokens';
+export default function SignUpScreen() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState<'patient' | 'caregiver'>('patient');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { signUp } = useAuth();
+  const router = useRouter();
 
-const SignUpScreen = () => {
-  const { userRole } = useAuth();
+  const handleSignUp = async () => {
+    if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signUp(email.trim(), password, role, { name: name.trim() });
+      router.replace('/(tabs)/home');
+    } catch (error: any) {
+      Alert.alert('Sign Up Failed', error.message || 'Unable to create account');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar style="light" />
-      <LinearGradient
-        colors={DESIGN_TOKENS.colors.accent.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradientBackground}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header Section */}
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <View style={styles.logoBackground}>
-                <Logo size={100} variant="transparent" />
-              </View>
-            </View>
-
-            {userRole && (
-              <View style={styles.roleBadge}>
-                <Ionicons name="person-circle" size={20} color={COLORS.neutral.lightest} />
-                <Text style={styles.roleText}>
-                  Signing up as {userRole}
-                </Text>
-              </View>
-            )}
-
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>
-              Join GabAI Sense Guard to start your health journey
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-[#F8F9FA]"
+    >
+      <ScrollView contentContainerClassName="flex-grow" keyboardShouldPersistTaps="handled">
+        <View className="flex-1 justify-center px-6 py-12">
+          {/* Header */}
+          <View className="items-center mb-8">
+            <Pressable
+              onPress={() => router.back()}
+              className="absolute left-0 top-0"
+            >
+              <Ionicons name="arrow-back" size={24} color="#2A2D34" />
+            </Pressable>
+            <Text className="text-3xl font-bold text-[#2A2D34] mt-4" style={{ fontFamily: 'Inter' }}>
+              Create Account
+            </Text>
+            <Text className="text-base text-[#6B7280] mt-2" style={{ fontFamily: 'Roboto' }}>
+              Join SenseGuard today
             </Text>
           </View>
 
-          {/* Form Card */}
-          <View style={styles.formCard}>
-            <SignupForm />
-          </View>
+          {/* Form */}
+          <View className="space-y-4">
+            <View>
+              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+                Full Name
+              </Text>
+              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3">
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="Enter your full name"
+                  placeholderTextColor="#9CA3AF"
+                  autoCapitalize="words"
+                  className="text-base text-[#2A2D34]"
+                  style={{ fontFamily: 'Roboto' }}
+                />
+              </View>
+            </View>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <Link href="/(auth)/sign-in" style={styles.link}>
-              <Text style={styles.linkText}>Sign in</Text>
-            </Link>
+            <View>
+              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+                Email
+              </Text>
+              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3">
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  className="text-base text-[#2A2D34]"
+                  style={{ fontFamily: 'Roboto' }}
+                />
+              </View>
+            </View>
+
+            <View>
+              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+                Role
+              </Text>
+              <View className="flex-row gap-3">
+                <Pressable
+                  onPress={() => setRole('patient')}
+                  className={`flex-1 rounded-xl py-3 px-4 border-2 ${
+                    role === 'patient' ? 'bg-[#4982BB] border-[#4982BB]' : 'bg-white border-[#E5E7EB]'
+                  }`}
+                >
+                  <Text
+                    className={`text-center font-semibold text-base ${
+                      role === 'patient' ? 'text-white' : 'text-[#2A2D34]'
+                    }`}
+                    style={{ fontFamily: 'Roboto' }}
+                  >
+                    Patient
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setRole('caregiver')}
+                  className={`flex-1 rounded-xl py-3 px-4 border-2 ${
+                    role === 'caregiver' ? 'bg-[#4982BB] border-[#4982BB]' : 'bg-white border-[#E5E7EB]'
+                  }`}
+                >
+                  <Text
+                    className={`text-center font-semibold text-base ${
+                      role === 'caregiver' ? 'text-white' : 'text-[#2A2D34]'
+                    }`}
+                    style={{ fontFamily: 'Roboto' }}
+                  >
+                    Caregiver
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
+            <View>
+              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+                Password
+              </Text>
+              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3 flex-row items-center">
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#9CA3AF"
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoComplete="password-new"
+                  className="flex-1 text-base text-[#2A2D34]"
+                  style={{ fontFamily: 'Roboto' }}
+                />
+                <Pressable onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color="#6B7280"
+                  />
+                </Pressable>
+              </View>
+            </View>
+
+            <View>
+              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+                Confirm Password
+              </Text>
+              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3 flex-row items-center">
+                <TextInput
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  placeholder="Confirm your password"
+                  placeholderTextColor="#9CA3AF"
+                  secureTextEntry={!showConfirmPassword}
+                  autoCapitalize="none"
+                  autoComplete="password-new"
+                  className="flex-1 text-base text-[#2A2D34]"
+                  style={{ fontFamily: 'Roboto' }}
+                />
+                <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  <Ionicons
+                    name={showConfirmPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color="#6B7280"
+                  />
+                </Pressable>
+              </View>
+            </View>
+
+            <Pressable
+              onPress={handleSignUp}
+              disabled={loading}
+              className="bg-[#4982BB] rounded-xl py-4 mt-6 active:opacity-80"
+            >
+              <Text className="text-center text-white font-semibold text-base" style={{ fontFamily: 'Roboto' }}>
+                {loading ? 'Creating account...' : 'Sign Up'}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => router.back()}
+              className="mt-4"
+            >
+              <Text className="text-center text-[#4982BB] font-semibold text-base" style={{ fontFamily: 'Roboto' }}>
+                Already have an account? Sign In
+              </Text>
+            </Pressable>
           </View>
-        </ScrollView>
-      </LinearGradient>
-    </SafeAreaView>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  gradientBackground: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: DESIGN_TOKENS.spacing.xl,
-    justifyContent: 'center',
-    minHeight: '100%',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: DESIGN_TOKENS.spacing['3xl'],
-  },
-  logoContainer: {
-    marginBottom: DESIGN_TOKENS.spacing.xl,
-  },
-  logoBackground: {
-    width: 120,
-    height: 120,
-    borderRadius: DESIGN_TOKENS.radius['2xl'],
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...DESIGN_TOKENS.shadows.xl,
-  },
-  roleBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: DESIGN_TOKENS.spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: DESIGN_TOKENS.spacing.md,
-    paddingVertical: DESIGN_TOKENS.spacing.sm,
-    borderRadius: DESIGN_TOKENS.radius.full,
-    marginBottom: DESIGN_TOKENS.spacing.base,
-    ...DESIGN_TOKENS.shadows.sm,
-  },
-  roleText: {
-    ...DESIGN_TOKENS.typography.bodySmall,
-    color: COLORS.neutral.lightest,
-    fontWeight: '600',
-  },
-  title: {
-    ...DESIGN_TOKENS.typography.h1,
-    color: COLORS.neutral.lightest,
-    marginBottom: DESIGN_TOKENS.spacing.md,
-    textAlign: 'center',
-    fontWeight: '700',
-  },
-  subtitle: {
-    ...DESIGN_TOKENS.typography.body,
-    color: 'rgba(255, 255, 255, 0.9)',
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: DESIGN_TOKENS.spacing.base,
-  },
-  formCard: {
-    backgroundColor: COLORS.surface.background,
-    borderRadius: DESIGN_TOKENS.radius['2xl'],
-    padding: DESIGN_TOKENS.spacing.xl,
-    ...DESIGN_TOKENS.shadows.xl,
-    marginBottom: DESIGN_TOKENS.spacing.xl,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: DESIGN_TOKENS.spacing.base,
-  },
-  footerText: {
-    ...DESIGN_TOKENS.typography.body,
-    color: 'rgba(255, 255, 255, 0.9)',
-  },
-  link: {
-    marginLeft: DESIGN_TOKENS.spacing.xs,
-  },
-  linkText: {
-    ...DESIGN_TOKENS.typography.bodyBold,
-    color: COLORS.neutral.lightest,
-    textDecorationLine: 'underline',
-  },
-});
-
-export default SignUpScreen;
+}
