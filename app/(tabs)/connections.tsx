@@ -18,7 +18,8 @@ export default function ConnectionsScreen() {
   const [patientModalVisible, setPatientModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 16;
+  const bottomPadding = tabBarHeight + insets.bottom + 32;
+  const headerHeight = insets.top + 100;
 
   // Mock caregivers list (in real app, this would come from API)
   const caregivers: CaregiverProfile[] = [caregiverProfile];
@@ -35,18 +36,21 @@ export default function ConnectionsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+      <PageHeader 
+        title="Connections" 
+        subtitle="Manage your caregivers and patients" 
+      />
       <ScrollView 
         className="flex-1" 
-        contentContainerStyle={{ paddingBottom: bottomPadding }}
+        contentContainerStyle={{ 
+          paddingBottom: bottomPadding, 
+          paddingTop: headerHeight + 8 
+        }}
       >
-        {/* Header */}
-        <PageHeader 
-          title="Connections" 
-          subtitle="Manage your caregivers and patients" 
-        />
+        <View className="px-6 pt-6">
 
         {/* Caregivers Section */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Caregivers
           </Text>
@@ -68,7 +72,7 @@ export default function ConnectionsScreen() {
         </View>
 
         {/* Patients Section */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Patients
           </Text>
@@ -87,6 +91,7 @@ export default function ConnectionsScreen() {
               </Text>
             </View>
           )}
+        </View>
         </View>
       </ScrollView>
 

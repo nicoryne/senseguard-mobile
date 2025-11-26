@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 
 export default function TabsLayout() {
@@ -8,19 +8,23 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#4982BB',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarInactiveTintColor: '#a0aec0',
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
+          backgroundColor: '#1a2332',
+          borderTopWidth: 0,
           height: Platform.OS === 'ios' ? 88 : 64,
           paddingBottom: Platform.OS === 'ios' ? 28 : 8,
           paddingTop: 8,
+          elevation: 0,
+          shadowOpacity: 0,
         },
         tabBarLabelStyle: {
           fontFamily: 'Roboto',
           fontSize: 12,
-          fontWeight: '600',
+          fontWeight: '400',
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
       }}
     >
@@ -35,7 +39,7 @@ export default function TabsLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Feather name="home" size={24} color={color} />
           ),
         }}
       />
@@ -44,7 +48,7 @@ export default function TabsLayout() {
         options={{
           title: 'Connections',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
+            <Feather name="users" size={24} color={color} />
           ),
         }}
       />
@@ -53,7 +57,7 @@ export default function TabsLayout() {
         options={{
           title: 'Analysis',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="analytics" size={size} color={color} />
+            <Feather name="bar-chart-2" size={24} color={color} />
           ),
         }}
       />
@@ -62,7 +66,7 @@ export default function TabsLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={size} color={color} />
+            <Feather name="settings" size={24} color={color} />
           ),
         }}
       />

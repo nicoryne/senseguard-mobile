@@ -10,7 +10,8 @@ import PageHeader from '@/components/ui/PageHeader';
 export default function AnalysisScreen() {
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 16;
+  const bottomPadding = tabBarHeight + insets.bottom + 32;
+  const headerHeight = insets.top + 100;
 
   // Mock AI insights
   const insights = [
@@ -80,18 +81,21 @@ export default function AnalysisScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+      <PageHeader 
+        title="AI Analysis" 
+        subtitle="Insights, predictions, and personalized advice" 
+      />
       <ScrollView 
         className="flex-1" 
-        contentContainerStyle={{ paddingBottom: bottomPadding }}
+        contentContainerStyle={{ 
+          paddingBottom: bottomPadding, 
+          paddingTop: headerHeight + 8 
+        }}
       >
-        {/* Header */}
-        <PageHeader 
-          title="AI Analysis" 
-          subtitle="Insights, predictions, and personalized advice" 
-        />
+        <View className="px-6 pt-6">
 
         {/* AI Insights Section */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Insights
           </Text>
@@ -108,7 +112,7 @@ export default function AnalysisScreen() {
         </View>
 
         {/* Predictions Section */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Predictions
           </Text>
@@ -126,7 +130,7 @@ export default function AnalysisScreen() {
         </View>
 
         {/* Advice Section */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Personalized Advice
           </Text>
@@ -143,7 +147,7 @@ export default function AnalysisScreen() {
         </View>
 
         {/* Additional AI Features */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Additional Analysis
           </Text>
@@ -210,6 +214,7 @@ export default function AnalysisScreen() {
               Comprehensive analysis shows improvement across pressure, gait, and temperature metrics.
             </Text>
           </Card>
+        </View>
         </View>
       </ScrollView>
 

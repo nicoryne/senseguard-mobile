@@ -16,15 +16,17 @@ export default function Input({
   return (
     <View className={containerClassName}>
       {label && (
-        <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
+        <Text className="text-sm font-semibold text-[#1a2332] mb-2" style={{ fontFamily: 'Roboto' }}>
           {label}
         </Text>
       )}
-      <View className={`bg-white rounded-xl border ${error ? 'border-[#EF4444]' : 'border-[#E5E7EB]'} px-4 py-3`}>
+      <View 
+        className={`bg-[#f7fafc] rounded-lg border ${error ? 'border-[#EF4444]' : 'border-[#e2e8f0]'} px-4 py-3`}
+      >
         <TextInput
-          className={`text-base text-[#2A2D34] ${className}`}
+          className={`text-base text-[#1a2332] ${className}`}
           style={{ fontFamily: 'Roboto' }}
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor="#a0aec0"
           {...props}
         />
       </View>

@@ -14,7 +14,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 16;
+  const bottomPadding = tabBarHeight + insets.bottom + 32;
+  const headerHeight = insets.top + 100;
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [batteryLevel, setBatteryLevel] = useState(78); // Mock battery level
@@ -45,18 +46,21 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+      <PageHeader 
+        title="Settings" 
+        subtitle="Manage your account and preferences" 
+      />
       <ScrollView 
         className="flex-1" 
-        contentContainerStyle={{ paddingBottom: bottomPadding }}
+        contentContainerStyle={{ 
+          paddingBottom: bottomPadding, 
+          paddingTop: headerHeight + 8 
+        }}
       >
-        {/* Header */}
-        <PageHeader 
-          title="Settings" 
-          subtitle="Manage your account and preferences" 
-        />
+        <View className="px-6 pt-6">
 
         {/* Profile Section */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Profile
           </Text>
@@ -87,7 +91,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* Account Settings */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Account
           </Text>
@@ -123,7 +127,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* Notifications */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Notifications
           </Text>
@@ -148,7 +152,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* App Preferences */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             App Preferences
           </Text>
@@ -194,7 +198,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* Insole Settings (Scrollable bottom section) */}
-        <View className="px-6 mb-6">
+        <View className="mb-6">
           <Text className="text-lg font-bold text-[#2A2D34] mb-3" style={{ fontFamily: 'Inter' }}>
             Insole Device
           </Text>
@@ -269,10 +273,9 @@ export default function SettingsScreen() {
         </View>
 
         {/* Logout Button */}
-        <View className="px-6 mb-6">
-          <Button onPress={handleLogout} variant="danger" className="w-full">
-            Logout
-          </Button>
+        <View className="mb-6">
+          <Button onPress={handleLogout} variant="danger" title="Logout" className="w-full" />
+        </View>
         </View>
       </ScrollView>
 

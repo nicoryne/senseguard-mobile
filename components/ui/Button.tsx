@@ -1,52 +1,76 @@
-import { Pressable, Text, ViewStyle } from 'react-native';
-import { ReactNode } from 'react';
+import { TouchableOpacity, Text, ActivityIndicator, View } from 'react-native'
+import { Feather } from '@expo/vector-icons'
 
 interface ButtonProps {
-  onPress: () => void;
-  children: ReactNode;
-  variant?: 'primary' | 'secondary' | 'danger' | 'outline';
-  disabled?: boolean;
-  className?: string;
-  style?: ViewStyle;
+  title?: string
+  children?: React.ReactNode
+  onPress: () => void
+  loading?: boolean
+  variant?: 'primary' | 'secondary' | 'danger' | 'outline'
+  disabled?: boolean
+  className?: string
+  icon?: string
+  iconPosition?: 'left' | 'right'
 }
 
 export default function Button({
-  onPress,
+  title,
   children,
+  onPress,
+  loading = false,
   variant = 'primary',
   disabled = false,
   className = '',
-  style,
+  icon,
+  iconPosition = 'left',
 }: ButtonProps) {
-  const baseClasses = 'rounded-xl py-4 px-6 active:opacity-80';
+  const isPrimary = variant === 'primary'
+  const isSecondary = variant === 'secondary'
+  const isDanger = variant === 'danger'
+  const isOutline = variant === 'outline'
+  const isDisabled = disabled || loading
   
-  const variantClasses = {
-    primary: 'bg-[#4982BB]',
-    secondary: 'bg-[#e7a38d]',
-    danger: 'bg-[#EF4444]',
-    outline: 'bg-transparent border-2 border-[#4982BB]',
-  };
-
-  const textClasses = {
-    primary: 'text-white',
-    secondary: 'text-white',
-    danger: 'text-white',
-    outline: 'text-[#4982BB]',
-  };
+  // Use brand colors
+  const bgColor = isPrimary ? '#4982BB' : isSecondary ? '#e7a38d' : isDanger ? '#EF4444' : 'transparent'
+  const textColor = isOutline ? '#4982BB' : '#ffffff'
+  const iconColor = textColor
+  const borderColor = isOutline ? '#4982BB' : 'transparent'
 
   return (
-    <Pressable
+    <TouchableOpacity
+      className={`py-3.5 rounded-lg items-center justify-center flex-row ${
+        isDisabled ? 'opacity-50' : ''
+      } ${className}`}
+      style={{
+        backgroundColor: bgColor,
+        borderWidth: isOutline ? 1 : 0,
+        borderColor: borderColor,
+      }}
       onPress={onPress}
-      disabled={disabled}
-      className={`${baseClasses} ${variantClasses[variant]} ${disabled ? 'opacity-50' : ''} ${className}`}
-      style={style}
+      disabled={isDisabled}
+      activeOpacity={0.8}
     >
-      <Text
-        className={`text-center font-semibold text-base ${textClasses[variant]}`}
-        style={{ fontFamily: 'Roboto' }}
-      >
-        {children}
-      </Text>
-    </Pressable>
-  );
+      {loading ? (
+        <ActivityIndicator color={textColor} />
+      ) : (
+        <View className="flex-row items-center">
+          {icon && iconPosition === 'left' && (
+            <Feather name={icon as any} size={20} color={iconColor} style={{ marginRight: 8 }} />
+          )}
+          {children || (
+            <Text
+              className="text-base font-semibold"
+              style={{ color: textColor, fontFamily: 'Roboto' }}
+            >
+              {title}
+            </Text>
+          )}
+          {icon && iconPosition === 'right' && (
+            <Feather name={icon as any} size={20} color={iconColor} style={{ marginLeft: 8 }} />
+          )}
+        </View>
+      )}
+    </TouchableOpacity>
+  )
 }
+

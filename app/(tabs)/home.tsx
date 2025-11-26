@@ -18,7 +18,9 @@ export default function HomeScreen() {
   const [vptIntensity, setVptIntensity] = useState(50);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 16;
+  const bottomPadding = tabBarHeight + insets.bottom + 32;
+  // Header height: safe area top + padding + content (approximately 100-120px)
+  const headerHeight = insets.top + 100;
 
   // Mock temperature data (in real app, this would come from sensors)
   const leftFootTemp = 32.5;
@@ -33,7 +35,11 @@ export default function HomeScreen() {
   if (!pressureData) {
     return (
       <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-        <View className="flex-1 justify-center items-center">
+        <PageHeader 
+          title="Home" 
+          subtitle="Real-time monitoring dashboard" 
+        />
+        <View className="flex-1 justify-center items-center" style={{ marginTop: headerHeight }}>
           <Text className="text-[#6B7280]" style={{ fontFamily: 'Roboto' }}>
             No pressure data available
           </Text>
@@ -44,18 +50,21 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+      <PageHeader 
+        title="Home" 
+        subtitle="Real-time monitoring dashboard" 
+      />
       <ScrollView 
         className="flex-1" 
-        contentContainerStyle={{ paddingBottom: bottomPadding }}
+        contentContainerStyle={{ 
+          paddingBottom: bottomPadding, 
+          paddingTop: headerHeight + 8 
+        }}
       >
-        {/* Header */}
-        <PageHeader 
-          title="Home" 
-          subtitle="Real-time monitoring dashboard" 
-        />
+        <View className="px-6 pt-6">
 
         {/* Plantar Pressure Visualization */}
-        <View className="px-6 mb-4">
+        <View className="mb-4">
           <PressureVisualization
             leftFoot={pressureData.left}
             rightFoot={pressureData.right}
@@ -65,22 +74,22 @@ export default function HomeScreen() {
         </View>
 
         {/* Temperature Display */}
-        <View className="px-6 mb-4">
+        <View className="mb-4">
           <TemperatureDisplay leftFoot={leftFootTemp} rightFoot={rightFootTemp} />
         </View>
 
         {/* Gait Trend Chart */}
-        <View className="px-6 mb-4">
+        <View className="mb-4">
           <GaitTrendChart data={gaitChartData} />
         </View>
 
         {/* VPT Sensor Feedback */}
-        <View className="px-6 mb-4">
+        <View className="mb-4">
           <VPTFeedback intensity={vptIntensity} active={vptIntensity > 0} />
         </View>
 
         {/* VPT Vibration Slider */}
-        <View className="px-6 mb-4">
+        <View className="mb-4">
           <Card className="p-4">
             <Slider
               value={vptIntensity}
@@ -94,6 +103,7 @@ export default function HomeScreen() {
               Adjust the vibration intensity of the VPT sensor. Higher values provide stronger feedback.
             </Text>
           </Card>
+        </View>
         </View>
       </ScrollView>
 
