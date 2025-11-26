@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import { Svg, Path, Circle } from 'react-native-svg';
+import { Svg, Path, Circle, LinearGradient, Stop, Defs } from 'react-native-svg';
 import Card from '../ui/Card';
 
 interface PressureVisualizationProps {
@@ -56,13 +56,12 @@ export default function PressureVisualization({
         </Text>
         <View className="relative">
           <Svg width="120" height="120" viewBox="0 0 100 100">
-            {/* Foot outline with gradient fill */}
-            <defs>
-              <linearGradient id={`footGradient-${side}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#F8F9FA" stopOpacity="1" />
-                <stop offset="100%" stopColor="#E5E7EB" stopOpacity="1" />
-              </linearGradient>
-            </defs>
+            <Defs>
+              <LinearGradient id={`footGradient-${side}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                <Stop offset="0%" stopColor="#F8F9FA" stopOpacity="1" />
+                <Stop offset="100%" stopColor="#E5E7EB" stopOpacity="1" />
+              </LinearGradient>
+            </Defs>
             <Path
               d={footPath}
               fill={`url(#footGradient-${side})`}

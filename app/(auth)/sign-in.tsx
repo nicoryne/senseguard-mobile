@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Pressable, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import TextInput from '@/components/ui/TextInput';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const { logIn } = useAuth();
   const router = useRouter();
 
@@ -56,50 +55,25 @@ export default function SignInScreen() {
 
           {/* Form */}
           <View className="space-y-4">
-            <View>
-              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
-                Email
-              </Text>
-              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3">
-                <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="Enter your email"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  className="text-base text-[#2A2D34]"
-                  style={{ fontFamily: 'Roboto' }}
-                />
-              </View>
-            </View>
+            <TextInput
+              label="Email"
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+              icon="mail"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
 
-            <View>
-              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
-                Password
-              </Text>
-              <View className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3 flex-row items-center">
-                <TextInput
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter your password"
-                  placeholderTextColor="#9CA3AF"
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoComplete="password"
-                  className="flex-1 text-base text-[#2A2D34]"
-                  style={{ fontFamily: 'Roboto' }}
-                />
-                <Pressable onPress={() => setShowPassword(!showPassword)}>
-                  <Ionicons
-                    name={showPassword ? 'eye-off' : 'eye'}
-                    size={20}
-                    color="#6B7280"
-                  />
-                </Pressable>
-              </View>
-            </View>
+            <TextInput
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              icon="lock"
+              secureTextEntry
+              autoCapitalize="none"
+            />
 
             <Pressable
               onPress={handleSignIn}
