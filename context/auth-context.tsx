@@ -26,6 +26,11 @@ export interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// Storage keys
+const AUTH_STORAGE_KEY = 'auth_user'
+const USER_DATA_STORAGE_KEY = 'auth_user_data'
+const USER_ROLE_STORAGE_KEY = 'auth_user_role'
+
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,19 +40,39 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const router = useRouter()
   const segments = useSegments()
 
-  // Load selected role from storage on mount
+  // Restore auth state from AsyncStorage on mount
   useEffect(() => {
-    const loadSelectedRole = async () => {
+    const restoreAuthState = async () => {
       try {
-        const stored = await AsyncStorage.getItem(ROLE_STORAGE_KEY)
-        if (stored && (stored === 'patient' || stored === 'caregiver')) {
-          setSelectedRole(stored as 'patient' | 'caregiver')
+        const [storedUser, storedUserData, storedUserRole, storedSelectedRole] = await Promise.all([
+          AsyncStorage.getItem(AUTH_STORAGE_KEY),
+          AsyncStorage.getItem(USER_DATA_STORAGE_KEY),
+          AsyncStorage.getItem(USER_ROLE_STORAGE_KEY),
+          AsyncStorage.getItem(ROLE_STORAGE_KEY),
+        ])
+
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser)
+            // Set user data immediately for faster UI
+            if (storedUserData) {
+              setUserData(JSON.parse(storedUserData))
+            }
+            if (storedUserRole && (storedUserRole === 'patient' || storedUserRole === 'caregiver')) {
+              setUserRole(storedUserRole as 'patient' | 'caregiver')
+            }
+            if (storedSelectedRole && (storedSelectedRole === 'patient' || storedSelectedRole === 'caregiver')) {
+              setSelectedRole(storedSelectedRole as 'patient' | 'caregiver')
+            }
+          } catch (error) {
+            console.error('Error parsing stored auth data:', error)
+          }
         }
       } catch (error) {
-        console.error('Error loading selected role:', error)
+        console.error('Error restoring auth state:', error)
       }
     }
-    loadSelectedRole()
+    restoreAuthState()
   }, [])
 
   useEffect(() => {
@@ -60,6 +85,19 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           setUserRole(role)
           setUserData(profile)
 
+          // Persist auth state to AsyncStorage
+          const userToStore = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+          }
+          await Promise.all([
+            AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userToStore)),
+            AsyncStorage.setItem(USER_DATA_STORAGE_KEY, JSON.stringify(profile)),
+            role && AsyncStorage.setItem(USER_ROLE_STORAGE_KEY, role),
+          ])
+
           // Set selectedRole if not already set
           if (!selectedRole && role) {
             setSelectedRole(role)
@@ -68,13 +106,27 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         } catch (error) {
           console.error('Error loading user profile:', error)
           setCurrentUser(user)
+          // Still store basic user info even if profile fails
+          const userToStore = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+          }
+          await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userToStore))
         }
       } else {
         setCurrentUser(null)
         setUserRole(null)
         setUserData(null)
         setSelectedRole(null)
-        await AsyncStorage.removeItem(ROLE_STORAGE_KEY)
+        // Clear all auth-related storage
+        await Promise.all([
+          AsyncStorage.removeItem(AUTH_STORAGE_KEY),
+          AsyncStorage.removeItem(USER_DATA_STORAGE_KEY),
+          AsyncStorage.removeItem(USER_ROLE_STORAGE_KEY),
+          AsyncStorage.removeItem(ROLE_STORAGE_KEY),
+        ])
       }
       setLoading(false)
     })
@@ -100,10 +152,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     setSelectedRole(role)
     try {
       await AsyncStorage.setItem(ROLE_STORAGE_KEY, role)
+      // Also update user role storage if user is logged in
+      if (currentUser) {
+        await AsyncStorage.setItem(USER_ROLE_STORAGE_KEY, role)
+      }
     } catch (error) {
       console.error('Error saving selected role:', error)
     }
-  }, [])
+  }, [currentUser])
 
   const signUp = useCallback(
     async (email: string, password: string, role: string, userData: any) => {
@@ -120,7 +176,20 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setUserRole(role as UserRole)
         setSelectedRole(role as UserRole)
         setUserData(profile)
-        await AsyncStorage.setItem(ROLE_STORAGE_KEY, role)
+
+        // Persist auth state
+        const userToStore = {
+          uid: userCredential.user.uid,
+          email: userCredential.user.email,
+          displayName: userCredential.user.displayName,
+          photoURL: userCredential.user.photoURL,
+        }
+        await Promise.all([
+          AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userToStore)),
+          AsyncStorage.setItem(USER_DATA_STORAGE_KEY, JSON.stringify(profile)),
+          AsyncStorage.setItem(USER_ROLE_STORAGE_KEY, role),
+          AsyncStorage.setItem(ROLE_STORAGE_KEY, role),
+        ])
       } catch (error) {
         // Re-throw error so form can handle it
         throw error
@@ -132,16 +201,29 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const logIn = useCallback(async (email: string, password: string) => {
     try {
       const { signInWithEmailAndPassword } = await import('firebase/auth')
-      await signInWithEmailAndPassword(auth, email, password)
-      if (auth.currentUser) {
-        const profile = await getUserProfile(auth.currentUser.uid)
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      
+      if (user) {
+        const profile = await getUserProfile(user.uid)
         const role = (profile?.role as UserRole) || null
         setUserRole(role)
         setSelectedRole(role)
         setUserData(profile)
-        if (role) {
-          await AsyncStorage.setItem(ROLE_STORAGE_KEY, role)
+
+        // Persist auth state
+        const userToStore = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
         }
+        await Promise.all([
+          AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userToStore)),
+          AsyncStorage.setItem(USER_DATA_STORAGE_KEY, JSON.stringify(profile)),
+          role && AsyncStorage.setItem(USER_ROLE_STORAGE_KEY, role),
+          role && AsyncStorage.setItem(ROLE_STORAGE_KEY, role),
+        ])
       }
     } catch (error) {
       // Re-throw error so form can handle it
@@ -150,13 +232,29 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   }, [])
 
   const logOut = useCallback(async () => {
-    const { signOut } = await import('firebase/auth')
-    await signOut(auth)
-    setCurrentUser(null)
-    setUserRole(null)
-    setUserData(null)
-    setSelectedRole(null)
-    await AsyncStorage.removeItem(ROLE_STORAGE_KEY)
+    try {
+      const { signOut } = await import('firebase/auth')
+      await signOut(auth)
+      setCurrentUser(null)
+      setUserRole(null)
+      setUserData(null)
+      setSelectedRole(null)
+      
+      // Clear all auth-related storage
+      await Promise.all([
+        AsyncStorage.removeItem(AUTH_STORAGE_KEY),
+        AsyncStorage.removeItem(USER_DATA_STORAGE_KEY),
+        AsyncStorage.removeItem(USER_ROLE_STORAGE_KEY),
+        AsyncStorage.removeItem(ROLE_STORAGE_KEY),
+      ])
+    } catch (error) {
+      console.error('Error during logout:', error)
+      // Still clear local state even if storage clear fails
+      setCurrentUser(null)
+      setUserRole(null)
+      setUserData(null)
+      setSelectedRole(null)
+    }
   }, [])
 
   return (

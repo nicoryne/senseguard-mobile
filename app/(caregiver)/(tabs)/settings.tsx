@@ -1,53 +1,152 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 import Button from '../../../components/ui/Button';
-import TopHeader from '../../../components/headers/TopHeader';
-import { useAuth } from '../../../context/AuthContext';
+import Logo from '../../../components/ui/Logo';
+import { useAuth } from '../../../context/auth-context';
 import { caregiverProfile } from '../../../lib/mock-data';
 import { COLORS } from '../../../lib/colors';
 import { FONTS } from '../../../lib/fonts';
+import { DESIGN_TOKENS } from '../../../lib/design-tokens';
 
 export default function CaregiverSettingsScreen() {
   const { currentUser, logOut } = useAuth();
+  const router = useRouter();
   const profile = currentUser ?? caregiverProfile;
+
+  const settingsSections = [
+    {
+      title: 'Account',
+      items: [
+        {
+          icon: 'person-outline' as const,
+          label: 'Profile',
+          value: profile.name,
+          onPress: () => router.push('/(caregiver)/(tabs)/settings/profile'),
+        },
+        {
+          icon: 'mail-outline' as const,
+          label: 'Email',
+          value: profile.email,
+          onPress: () => router.push('/(caregiver)/(tabs)/settings/profile'),
+        },
+        {
+          icon: 'medical-outline' as const,
+          label: 'Specialization',
+          value: caregiverProfile.specialization ?? 'Diabetic Foot Care',
+          onPress: () => {},
+        },
+      ],
+    },
+    {
+      title: 'Preferences',
+      items: [
+        {
+          icon: 'notifications-outline' as const,
+          label: 'Notifications',
+          value: 'Manage alerts',
+          onPress: () => router.push('/(caregiver)/(tabs)/settings/notifications'),
+        },
+        {
+          icon: 'people-outline' as const,
+          label: 'Patient Management',
+          value: 'Manage patients',
+          onPress: () => router.push('/(caregiver)/(tabs)/patients'),
+        },
+      ],
+    },
+    {
+      title: 'About',
+      items: [
+        {
+          icon: 'information-circle-outline' as const,
+          label: 'About',
+          value: 'App version & info',
+          onPress: () => router.push('/(caregiver)/(tabs)/settings/about'),
+        },
+        {
+          icon: 'help-circle-outline' as const,
+          label: 'Help & Support',
+          value: 'Get assistance',
+          onPress: () => {},
+        },
+      ],
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Non-scrollable Header */}
-      <TopHeader
-        title="Settings"
-        subtitle="Manage your account"
-        showLogo={true}
-        backgroundType="light"
-      />
+      {/* Modern Header with Gradient */}
+      <LinearGradient
+        colors={DESIGN_TOKENS.colors.primary.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        <View style={styles.headerContent}>
+          <View style={styles.headerLeft}>
+            <View style={styles.logoContainer}>
+              <Logo size={44} variant="transparent" />
+            </View>
+            <View>
+              <Text style={styles.headerTitle}>Settings</Text>
+              <Text style={styles.headerSubtitle}>Manage your account</Text>
+            </View>
+          </View>
+        </View>
+      </LinearGradient>
 
       {/* Scrollable Body */}
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <View style={styles.section}>
-          <View style={styles.card}>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Name</Text>
-              <Text style={styles.value}>{profile.name}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Email</Text>
-              <Text style={styles.value}>{profile.email}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Specialization</Text>
-              <Text style={styles.value}>
-                {caregiverProfile.specialization ?? 'Diabetic Foot Care'}
-              </Text>
+        {settingsSections.map((section, sectionIdx) => (
+          <View key={sectionIdx} style={styles.section}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            <View style={styles.sectionCard}>
+              {section.items.map((item, itemIdx) => (
+                <Pressable
+                  key={itemIdx}
+                  onPress={item.onPress}
+                  style={({ pressed }) => [
+                    styles.settingItem,
+                    pressed && styles.settingItemPressed,
+                    itemIdx < section.items.length - 1 && styles.settingItemBorder,
+                  ]}
+                >
+                  <View style={styles.settingItemLeft}>
+                    <View style={styles.iconContainer}>
+                      <Ionicons name={item.icon} size={22} color={COLORS.primary} />
+                    </View>
+                    <View style={styles.settingItemContent}>
+                      <Text style={styles.settingItemLabel}>{item.label}</Text>
+                      <Text style={styles.settingItemValue}>{item.value}</Text>
+                    </View>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={COLORS.neutral.medium}
+                  />
+                </Pressable>
+              ))}
             </View>
           </View>
-        </View>
+        ))}
 
+        {/* Logout Section */}
         <View style={styles.section}>
-          <Button title="Log out" onPress={logOut} variant="danger" />
+          <Button
+            title="Log Out"
+            onPress={logOut}
+            variant="danger"
+            icon={<Ionicons name="log-out-outline" size={20} color={COLORS.neutral.lightest} />}
+          />
         </View>
 
         {/* Bottom padding */}
@@ -62,47 +161,103 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.neutral.lighter,
   },
+  header: {
+    paddingTop: DESIGN_TOKENS.spacing.xl,
+    paddingBottom: DESIGN_TOKENS.spacing['2xl'],
+    paddingHorizontal: DESIGN_TOKENS.spacing.base,
+    ...DESIGN_TOKENS.shadows.lg,
+  },
+  headerContent: {
+    gap: DESIGN_TOKENS.spacing.base,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: DESIGN_TOKENS.spacing.md,
+  },
+  logoContainer: {
+    width: 52,
+    height: 52,
+    borderRadius: DESIGN_TOKENS.radius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    ...DESIGN_TOKENS.typography.h2,
+    color: COLORS.neutral.lightest,
+    marginBottom: DESIGN_TOKENS.spacing.xs,
+  },
+  headerSubtitle: {
+    ...DESIGN_TOKENS.typography.body,
+    color: 'rgba(255, 255, 255, 0.85)',
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.neutral.lighter,
   },
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: DESIGN_TOKENS.spacing['2xl'],
   },
   section: {
-    paddingHorizontal: 16,
-    paddingTop: 24,
+    paddingHorizontal: DESIGN_TOKENS.spacing.base,
+    paddingTop: DESIGN_TOKENS.spacing.xl,
   },
-  card: {
+  sectionTitle: {
+    ...DESIGN_TOKENS.typography.smallBold,
+    color: COLORS.neutral.medium,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: DESIGN_TOKENS.spacing.md,
+    paddingHorizontal: DESIGN_TOKENS.spacing.sm,
+  },
+  sectionCard: {
     backgroundColor: COLORS.surface.background,
-    borderRadius: 16,
-    padding: 16,
-    gap: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderRadius: DESIGN_TOKENS.radius.xl,
+    overflow: 'hidden',
+    ...DESIGN_TOKENS.shadows.md,
   },
-  infoRow: {
-    paddingVertical: 8,
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: DESIGN_TOKENS.spacing.base,
+    backgroundColor: COLORS.surface.background,
+  },
+  settingItemPressed: {
+    backgroundColor: COLORS.surface.secondary,
+  },
+  settingItemBorder: {
     borderBottomWidth: 1,
     borderBottomColor: COLORS.surface.tertiary,
   },
-  label: {
-    ...FONTS.bodySmall,
-    color: COLORS.neutral.medium,
-    marginBottom: 4,
+  settingItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: DESIGN_TOKENS.spacing.md,
+    flex: 1,
   },
-  value: {
-    ...FONTS.body,
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: DESIGN_TOKENS.radius.md,
+    backgroundColor: `${COLORS.primary}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingItemContent: {
+    flex: 1,
+  },
+  settingItemLabel: {
+    ...DESIGN_TOKENS.typography.bodyBold,
     color: COLORS.neutral.dark,
-    fontWeight: '600',
+    marginBottom: DESIGN_TOKENS.spacing.xs,
+  },
+  settingItemValue: {
+    ...DESIGN_TOKENS.typography.small,
+    color: COLORS.neutral.medium,
   },
   bottomPadding: {
-    height: 20,
+    height: DESIGN_TOKENS.spacing['2xl'],
   },
 });
-
-
-

@@ -1,41 +1,57 @@
 import { Link } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 
 import LoginForm from '../../components/forms/LoginForm';
 import Logo from '../../components/ui/Logo';
 import { COLORS } from '../../lib/colors';
 import { FONTS } from '../../lib/fonts';
+import { DESIGN_TOKENS } from '../../lib/design-tokens';
 
 const SignInScreen = () => {
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <StatusBar style="light" />
+      <LinearGradient
+        colors={DESIGN_TOKENS.colors.primary.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradientBackground}
       >
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Logo size={90} />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header Section */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <View style={styles.logoBackground}>
+                <Logo size={100} variant="transparent" />
+              </View>
+            </View>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>
+              Sign in to continue managing your health with GabAI Sense Guard
+            </Text>
           </View>
-          <Text style={styles.title}>Welcome back</Text>
-          <Text style={styles.subtitle}>
-            Sign in to continue to GabAI Sense Guard
-          </Text>
-        </View>
 
-        <View style={styles.formContainer}>
-          <LoginForm />
-        </View>
+          {/* Form Card */}
+          <View style={styles.formCard}>
+            <LoginForm />
+          </View>
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <Link href="/(auth)/sign-up" style={styles.link}>
-            <Text style={styles.linkText}>Sign up</Text>
-          </Link>
-        </View>
-      </ScrollView>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <Link href="/(auth)/sign-up" style={styles.link}>
+              <Text style={styles.linkText}>Sign up</Text>
+            </Link>
+          </View>
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -43,55 +59,70 @@ const SignInScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.neutral.lighter,
+  },
+  gradientBackground: {
+    flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
+    padding: DESIGN_TOKENS.spacing.xl,
     justifyContent: 'center',
+    minHeight: '100%',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: DESIGN_TOKENS.spacing['3xl'],
   },
   logoContainer: {
-    marginBottom: 24,
+    marginBottom: DESIGN_TOKENS.spacing.xl,
+  },
+  logoBackground: {
+    width: 120,
+    height: 120,
+    borderRadius: DESIGN_TOKENS.radius['2xl'],
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
+    ...DESIGN_TOKENS.shadows.xl,
   },
   title: {
-    ...FONTS.h1,
-    color: COLORS.neutral.dark,
-    marginBottom: 8,
+    ...DESIGN_TOKENS.typography.h1,
+    color: COLORS.neutral.lightest,
+    marginBottom: DESIGN_TOKENS.spacing.md,
     textAlign: 'center',
+    fontWeight: '700',
   },
   subtitle: {
-    ...FONTS.body,
-    color: COLORS.neutral.medium,
+    ...DESIGN_TOKENS.typography.body,
+    color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 24,
+    paddingHorizontal: DESIGN_TOKENS.spacing.base,
   },
-  formContainer: {
-    width: '100%',
-    marginBottom: 24,
+  formCard: {
+    backgroundColor: COLORS.surface.background,
+    borderRadius: DESIGN_TOKENS.radius['2xl'],
+    padding: DESIGN_TOKENS.spacing.xl,
+    ...DESIGN_TOKENS.shadows.xl,
+    marginBottom: DESIGN_TOKENS.spacing.xl,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: DESIGN_TOKENS.spacing.base,
   },
   footerText: {
-    ...FONTS.body,
-    color: COLORS.neutral.medium,
+    ...DESIGN_TOKENS.typography.body,
+    color: 'rgba(255, 255, 255, 0.9)',
   },
   link: {
-    marginLeft: 4,
+    marginLeft: DESIGN_TOKENS.spacing.xs,
   },
   linkText: {
-    ...FONTS.body,
-    color: COLORS.primary,
-    fontWeight: '600',
+    ...DESIGN_TOKENS.typography.bodyBold,
+    color: COLORS.neutral.lightest,
+    textDecorationLine: 'underline',
   },
 });
 

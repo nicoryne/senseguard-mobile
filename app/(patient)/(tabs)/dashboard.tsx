@@ -6,9 +6,12 @@ import {
   Text,
   View,
   Pressable,
+  Dimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 import AlertCard from '../../../components/cards/AlertCard';
 import MetricCard from '../../../components/cards/MetricCard';
@@ -17,11 +20,15 @@ import GaitQualityChart from '../../../components/charts/GaitQualityChart';
 import GaitAsymmetryWidget from '../../../components/widgets/GaitAsymmetryWidget';
 import ThermalHotspotCard from '../../../components/widgets/ThermalHotspotCard';
 import VPTTestingPanel from '../../../components/widgets/VPTTestingPanel';
+import FadeInView from '../../../components/animations/FadeInView';
 import Logo from '../../../components/ui/Logo';
 import { useCaregiverData } from '../../../hooks/useCaregiver';
 import { usePressureData } from '../../../hooks/usePressureData';
 import { COLORS } from '../../../lib/colors';
 import { FONTS } from '../../../lib/fonts';
+import { DESIGN_TOKENS } from '../../../lib/design-tokens';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -36,13 +43,18 @@ export default function DashboardScreen() {
         title: 'Max Pressure',
         value: latest?.summary.max ?? 0,
         unit: 'kPa',
-        color: COLORS.primary,
+        color: 'primary' as const,
+        icon: 'speedometer' as const,
+        trend: 'stable' as const,
       },
       {
         title: 'Avg Pressure',
         value: latest?.summary.avg ?? 0,
         unit: 'kPa',
-        color: COLORS.accent,
+        color: 'accent' as const,
+        icon: 'bar-chart' as const,
+        trend: 'down' as const,
+        trendValue: '2%',
       },
     ],
     [latest]
@@ -53,21 +65,64 @@ export default function DashboardScreen() {
     setTimeout(() => setRefreshing(false), 600);
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Non-scrollable Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Logo size={40} variant="transparent" />
-          <View>
-            <Text style={styles.greeting}>Hi Jordan</Text>
-            <Text style={styles.date}>{new Date().toDateString()}</Text>
+      {/* Modern Hero Header with Gradient */}
+      <LinearGradient
+        colors={DESIGN_TOKENS.colors.primary.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        <View style={styles.headerContent}>
+          <View style={styles.headerTop}>
+            <View style={styles.headerLeft}>
+              <View style={styles.logoContainer}>
+                <Logo size={44} variant="transparent" />
+              </View>
+              <View style={styles.greetingContainer}>
+                <Text style={styles.greeting}>{getGreeting()}, Jordan</Text>
+                <Text style={styles.date}>{new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}</Text>
+              </View>
+            </View>
+            <Pressable
+              onPress={() => router.push('/(patient)/(tabs)/settings')}
+              style={styles.settingsButton}
+            >
+              <Ionicons name="settings-outline" size={24} color={COLORS.neutral.lightest} />
+            </Pressable>
+          </View>
+
+          {/* Quick Stats in Header */}
+          <View style={styles.quickStats}>
+            <View style={styles.quickStatItem}>
+              <Text style={styles.quickStatValue}>87%</Text>
+              <Text style={styles.quickStatLabel}>Health Score</Text>
+            </View>
+            <View style={styles.quickStatDivider} />
+            <View style={styles.quickStatItem}>
+              <Text style={styles.quickStatValue}>12</Text>
+              <Text style={styles.quickStatLabel}>Days Active</Text>
+            </View>
+            <View style={styles.quickStatDivider} />
+            <View style={styles.quickStatItem}>
+              <Text style={styles.quickStatValue}>3</Text>
+              <Text style={styles.quickStatLabel}>Alerts</Text>
+            </View>
           </View>
         </View>
-        <Pressable onPress={() => router.push('/(patient)/(tabs)/settings')}>
-          <Text style={styles.settingsLink}>Settings</Text>
-        </Pressable>
-      </View>
+      </LinearGradient>
 
       {/* Scrollable Body */}
       <ScrollView
@@ -76,9 +131,23 @@ export default function DashboardScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        showsVerticalScrollIndicator={false}
       >
-        {/* Stream One: Gait Asymmetry Widget */}
-        <View style={styles.section}>
+        {/* Stream One: Gait Asymmetry Widget - Enhanced */}
+        <FadeInView direction="up" delay={100} style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Gait Analysis</Text>
+              <Text style={styles.sectionSubtitle}>Real-time walking pattern monitoring</Text>
+            </View>
+            <Pressable
+              style={styles.viewAllButton}
+              onPress={() => router.push('/(patient)/(tabs)/analytics')}
+            >
+              <Text style={styles.viewAllText}>View All</Text>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.primary} />
+            </Pressable>
+          </View>
           <GaitAsymmetryWidget
             leftFootLoad={45}
             rightFootLoad={62}
@@ -86,10 +155,16 @@ export default function DashboardScreen() {
             fallRisk="medium"
             symmetryScore={83}
           />
-        </View>
+        </FadeInView>
 
-        {/* Stream Two: Thermal & Hotspot Card */}
-        <View style={styles.section}>
+        {/* Stream Two: Thermal & Hotspot Card - Enhanced */}
+        <FadeInView direction="up" delay={200} style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Thermal Monitoring</Text>
+              <Text style={styles.sectionSubtitle}>Heat and pressure detection</Text>
+            </View>
+          </View>
           <ThermalHotspotCard
             leftFootTemp={32.5}
             rightFootTemp={33.2}
@@ -103,12 +178,15 @@ export default function DashboardScreen() {
               },
             ]}
           />
-        </View>
+        </FadeInView>
 
-        {/* Pressure Visualization Section */}
+        {/* Pressure Visualization Section - Enhanced */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Plantar Pressure</Text>
+            <View>
+              <Text style={styles.sectionTitle}>Plantar Pressure</Text>
+              <Text style={styles.sectionSubtitle}>3D pressure distribution</Text>
+            </View>
             <View style={styles.toggle}>
               {(['left', 'right'] as const).map((foot) => (
                 <Pressable
@@ -119,45 +197,64 @@ export default function DashboardScreen() {
                     selectedFoot === foot && styles.toggleItemActive,
                   ]}
                 >
+                  <Ionicons
+                    name={foot === 'left' ? 'footsteps-outline' : 'footsteps'}
+                    size={16}
+                    color={selectedFoot === foot ? COLORS.neutral.lightest : COLORS.neutral.medium}
+                  />
                   <Text
                     style={[
                       styles.toggleText,
                       selectedFoot === foot && styles.toggleTextActive,
                     ]}
                   >
-                    {foot.toUpperCase()}
+                    {foot.charAt(0).toUpperCase() + foot.slice(1)}
                   </Text>
                 </Pressable>
               ))}
             </View>
           </View>
-          <FootVisualization foot={selectedFoot} />
+          
+          <View style={styles.visualizationContainer}>
+            <FootVisualization foot={selectedFoot} />
+          </View>
+          
           <Pressable
             style={styles.detailsLink}
             onPress={() => router.push('/(patient)/pressure-details')}
           >
-            <Text style={styles.linkText}>View details →</Text>
+            <Text style={styles.linkText}>View detailed analysis</Text>
+            <Ionicons name="arrow-forward-circle" size={20} color={COLORS.primary} />
           </Pressable>
         </View>
 
-        {/* Pressure Metrics */}
-        <View style={styles.section}>
-          <View style={styles.statsRow}>
+        {/* Pressure Metrics - Enhanced Grid */}
+        <FadeInView direction="up" delay={400} style={styles.section}>
+          <Text style={styles.sectionTitle}>Key Metrics</Text>
+          <View style={styles.statsGrid}>
             {stats.map((stat, idx) => (
               <MetricCard
                 key={idx}
                 title={stat.title}
                 value={String(stat.value)}
                 unit={stat.unit}
-                color="primary"
-                icon="barbell"
+                color={stat.color}
+                icon={stat.icon}
+                trend={stat.trend}
+                trendValue={stat.trendValue}
               />
             ))}
           </View>
-        </View>
+        </FadeInView>
 
-        {/* Stream Three: VPT Testing Panel */}
+        {/* Stream Three: VPT Testing Panel - Enhanced */}
         <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Nerve Health</Text>
+              <Text style={styles.sectionSubtitle}>Vibration Perception Threshold testing</Text>
+            </View>
+          </View>
           <VPTTestingPanel
             currentVPT={12.5}
             lastTestDate={new Date()}
@@ -168,21 +265,46 @@ export default function DashboardScreen() {
           />
         </View>
 
-        {/* Weekly Gait Quality Chart */}
+        {/* Weekly Gait Quality Chart - Enhanced */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Weekly Gait Quality</Text>
-          <GaitQualityChart />
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Weekly Trends</Text>
+              <Text style={styles.sectionSubtitle}>7-day gait quality overview</Text>
+            </View>
+          </View>
+          <View style={styles.chartContainer}>
+            <GaitQualityChart />
+          </View>
         </View>
 
-        {/* Recent Alerts */}
+        {/* Recent Alerts - Enhanced */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent Alerts</Text>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Recent Alerts</Text>
+              <Text style={styles.sectionSubtitle}>Health notifications</Text>
+            </View>
+            {alerts.length > 0 && (
+              <Pressable
+                style={styles.viewAllButton}
+                onPress={() => router.push('/(patient)/(tabs)/connections')}
+              >
+                <Text style={styles.viewAllText}>View All</Text>
+                <Ionicons name="chevron-forward" size={16} color={COLORS.primary} />
+              </Pressable>
+            )}
+          </View>
           {alerts.length > 0 ? (
-            alerts.slice(0, 3).map((alert) => (
-              <AlertCard key={alert.id} alert={alert} />
-            ))
+            <View style={styles.alertsContainer}>
+              {alerts.slice(0, 3).map((alert) => (
+                <AlertCard key={alert.id} alert={alert} />
+              ))}
+            </View>
           ) : (
             <View style={styles.emptyCard}>
+              <Ionicons name="checkmark-circle" size={48} color={COLORS.success} />
+              <Text style={styles.emptyTitle}>All Clear!</Text>
               <Text style={styles.emptyText}>
                 No critical alerts in the last 24 hours
               </Text>
@@ -203,102 +325,189 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral.lighter,
   },
   header: {
-    paddingTop: 24,
-    paddingBottom: 16,
-    paddingHorizontal: 16,
-    backgroundColor: COLORS.primary,
+    paddingTop: DESIGN_TOKENS.spacing.xl,
+    paddingBottom: DESIGN_TOKENS.spacing['2xl'],
+    paddingHorizontal: DESIGN_TOKENS.spacing.base,
+    ...DESIGN_TOKENS.shadows.lg,
+  },
+  headerContent: {
+    gap: DESIGN_TOKENS.spacing.xl,
+  },
+  headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: DESIGN_TOKENS.spacing.md,
+    flex: 1,
+  },
+  logoContainer: {
+    width: 52,
+    height: 52,
+    borderRadius: DESIGN_TOKENS.radius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  greetingContainer: {
+    flex: 1,
   },
   greeting: {
-    ...FONTS.h2,
+    ...DESIGN_TOKENS.typography.h2,
     color: COLORS.neutral.lightest,
-    marginBottom: 4,
+    marginBottom: DESIGN_TOKENS.spacing.xs,
   },
   date: {
-    ...FONTS.bodySmall,
-    color: 'rgba(255, 255, 255, 0.7)',
+    ...DESIGN_TOKENS.typography.body,
+    color: 'rgba(255, 255, 255, 0.85)',
   },
-  settingsLink: {
-    ...FONTS.body,
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: DESIGN_TOKENS.radius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickStats: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: DESIGN_TOKENS.radius.xl,
+    padding: DESIGN_TOKENS.spacing.md,
+    gap: DESIGN_TOKENS.spacing.md,
+  },
+  quickStatItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  quickStatValue: {
+    ...DESIGN_TOKENS.typography.h3,
     color: COLORS.neutral.lightest,
-    fontWeight: '600',
+    fontWeight: '700',
+    marginBottom: DESIGN_TOKENS.spacing.xs,
+  },
+  quickStatLabel: {
+    ...DESIGN_TOKENS.typography.caption,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  quickStatDivider: {
+    width: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   container: {
     flex: 1,
     backgroundColor: COLORS.neutral.lighter,
   },
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: DESIGN_TOKENS.spacing['2xl'],
   },
   section: {
-    paddingHorizontal: 16,
-    paddingTop: 24,
+    paddingHorizontal: DESIGN_TOKENS.spacing.base,
+    paddingTop: DESIGN_TOKENS.spacing.xl,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
+    alignItems: 'flex-start',
+    marginBottom: DESIGN_TOKENS.spacing.base,
   },
   sectionTitle: {
-    ...FONTS.h3,
+    ...DESIGN_TOKENS.typography.h3,
     color: COLORS.neutral.dark,
-    marginBottom: 16,
+    marginBottom: DESIGN_TOKENS.spacing.xs,
+  },
+  sectionSubtitle: {
+    ...DESIGN_TOKENS.typography.small,
+    color: COLORS.neutral.medium,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  viewAllText: {
+    ...DESIGN_TOKENS.typography.smallBold,
+    color: COLORS.primary,
   },
   toggle: {
     flexDirection: 'row',
-    gap: 8,
+    gap: DESIGN_TOKENS.spacing.sm,
+    backgroundColor: COLORS.surface.secondary,
+    padding: 4,
+    borderRadius: DESIGN_TOKENS.radius.md,
   },
   toggleItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: COLORS.surface.secondary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: DESIGN_TOKENS.spacing.md,
+    paddingVertical: DESIGN_TOKENS.spacing.sm,
+    borderRadius: DESIGN_TOKENS.radius.sm,
+    backgroundColor: 'transparent',
   },
   toggleItemActive: {
     backgroundColor: COLORS.primary,
+    ...DESIGN_TOKENS.shadows.sm,
   },
   toggleText: {
-    ...FONTS.bodySmall,
-    color: COLORS.neutral.dark,
-    fontWeight: '600',
+    ...DESIGN_TOKENS.typography.smallBold,
+    color: COLORS.neutral.medium,
   },
   toggleTextActive: {
     color: COLORS.neutral.lightest,
   },
+  visualizationContainer: {
+    borderRadius: DESIGN_TOKENS.radius['2xl'],
+    overflow: 'hidden',
+    backgroundColor: COLORS.surface.background,
+    ...DESIGN_TOKENS.shadows.md,
+    marginBottom: DESIGN_TOKENS.spacing.md,
+  },
   detailsLink: {
-    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: DESIGN_TOKENS.spacing.sm,
     alignSelf: 'flex-start',
   },
   linkText: {
-    ...FONTS.bodySmall,
+    ...DESIGN_TOKENS.typography.bodyBold,
     color: COLORS.primary,
-    fontWeight: '600',
   },
-  statsRow: {
+  statsGrid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: DESIGN_TOKENS.spacing.md,
+  },
+  chartContainer: {
+    borderRadius: DESIGN_TOKENS.radius.xl,
+    backgroundColor: COLORS.surface.background,
+    padding: DESIGN_TOKENS.spacing.base,
+    ...DESIGN_TOKENS.shadows.md,
+  },
+  alertsContainer: {
+    gap: DESIGN_TOKENS.spacing.md,
   },
   emptyCard: {
-    backgroundColor: COLORS.surface.secondary,
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: COLORS.surface.background,
+    borderRadius: DESIGN_TOKENS.radius.xl,
+    padding: DESIGN_TOKENS.spacing['2xl'],
+    alignItems: 'center',
+    ...DESIGN_TOKENS.shadows.sm,
+  },
+  emptyTitle: {
+    ...DESIGN_TOKENS.typography.h4,
+    color: COLORS.neutral.dark,
+    marginTop: DESIGN_TOKENS.spacing.md,
+    marginBottom: DESIGN_TOKENS.spacing.xs,
   },
   emptyText: {
-    ...FONTS.bodySmall,
+    ...DESIGN_TOKENS.typography.body,
     color: COLORS.neutral.medium,
+    textAlign: 'center',
   },
   bottomPadding: {
-    height: 20,
+    height: DESIGN_TOKENS.spacing['2xl'],
   },
 });
-
-
-
