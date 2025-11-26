@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { usePathname, useRouter } from 'expo-router'
-import { useAuth } from '@/context/auth-context'
 
 interface TabItem {
   name: string
@@ -21,7 +20,6 @@ const tabs: TabItem[] = [
 export default function BottomNavigation() {
   const pathname = usePathname()
   const router = useRouter()
-  const { currentUser } = useAuth()
 
   // Show all tabs (no role restrictions)
   const visibleTabs = tabs.filter((tab) => !tab.adminOnly)

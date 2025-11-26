@@ -209,6 +209,7 @@ export default function AnalysisScreen() {
               Comprehensive analysis shows improvement across pressure, gait, and temperature metrics.
             </Text>
           </Card>
+        </View>
       </ScrollView>
 
       {/* Emergency FAB */}

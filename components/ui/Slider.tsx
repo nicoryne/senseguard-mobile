@@ -1,6 +1,5 @@
 import { View, Text } from 'react-native';
 import SliderComponent from '@react-native-community/slider';
-import { useState } from 'react';
 
 interface SliderProps {
   value: number;

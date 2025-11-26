@@ -3,7 +3,7 @@ import { LineChart } from 'react-native-chart-kit';
 import Card from '../ui/Card';
 
 interface GaitTrendChartProps {
-  data: Array<{ day: string; score: number }>;
+  data: { day: string; score: number }[];
   className?: string;
 }
 

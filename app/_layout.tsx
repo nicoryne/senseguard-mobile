@@ -1,6 +1,5 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
-import { useRouter, useSegments } from 'expo-router';
 import AuthProvider, { useAuth } from '@/context/auth-context';
 import { View, ActivityIndicator } from 'react-native';
 import '@/global.css';
@@ -14,7 +13,6 @@ function RootLayoutNav() {
     if (loading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inTabsGroup = segments[0] === '(tabs)';
 
     if (!currentUser && !inAuthGroup) {
       router.replace('/(auth)/sign-in');

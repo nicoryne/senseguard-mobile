@@ -6,8 +6,7 @@ import CaregiverRow from '@/components/connections/CaregiverRow';
 import PatientRow from '@/components/connections/PatientRow';
 import CaregiverDetail from '@/components/connections/CaregiverDetail';
 import PatientDetail from '@/components/connections/PatientDetail';
-import { CaregiverProfile } from '@/types/user';
-import { PatientSummary } from '@/types/user';
+import { CaregiverProfile, PatientSummary } from '@/types/user';
 import FAB from '@/components/ui/FAB';
 import PageHeader from '@/components/ui/PageHeader';
 

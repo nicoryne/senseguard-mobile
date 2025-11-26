@@ -116,7 +116,7 @@ export default function SignInScreen() {
               className="mt-4"
             >
               <Text className="text-center text-[#4982BB] font-semibold text-base" style={{ fontFamily: 'Roboto' }}>
-                Don't have an account? Sign Up
+                Don&apos;t have an account? Sign Up
               </Text>
             </Pressable>
           </View>

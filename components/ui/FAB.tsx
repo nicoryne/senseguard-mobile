@@ -1,9 +1,8 @@
-import { Pressable, View, Text, Modal, Platform } from 'react-native';
+import { Pressable, View, Text, Modal, Platform, Linking } from 'react-native';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Linking } from 'react-native';
 
 interface FABProps {
   caregiverPhone?: string;

@@ -1,5 +1,3 @@
-import { View, Text } from 'react-native';
-import Card from '../ui/Card';
 import TemperatureChart from '../charts/TemperatureChart';
 
 interface TemperatureDisplayProps {

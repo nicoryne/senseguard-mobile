@@ -17,7 +17,7 @@ export default function SettingsScreen() {
   const bottomPadding = tabBarHeight + insets.bottom + 20;
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [hapticEnabled, setHapticEnabled] = useState(true);
-  const [batteryLevel, setBatteryLevel] = useState(78); // Mock battery level
+  const [batteryLevel] = useState(78); // Mock battery level
 
   const handleLogout = () => {
     Alert.alert(
