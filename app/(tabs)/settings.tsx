@@ -271,7 +271,6 @@ export default function SettingsScreen() {
         <View className="mb-6">
           <Button onPress={handleLogout} variant="danger" title="Logout" className="w-full" />
         </View>
-        </View>
       </ScrollView>
 
       {/* Emergency FAB */}
