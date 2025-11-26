@@ -1,5 +1,6 @@
-import { Pressable, View, Text, Modal } from 'react-native';
+import { Pressable, View, Text, Modal, Platform } from 'react-native';
 import { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Linking } from 'react-native';
@@ -10,6 +11,9 @@ interface FABProps {
 
 export default function FAB({ caregiverPhone }: FABProps) {
   const [menuVisible, setMenuVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
+  const bottomPosition = tabBarHeight + insets.bottom + 16;
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -32,8 +36,9 @@ export default function FAB({ caregiverPhone }: FABProps) {
     <>
       <Pressable
         onPress={handlePress}
-        className="absolute bottom-24 right-6 w-16 h-16 rounded-full bg-[#4982BB] items-center justify-center shadow-lg active:opacity-80 z-50"
+        className="absolute right-6 w-16 h-16 rounded-full bg-[#4982BB] items-center justify-center shadow-lg active:opacity-80 z-50"
         style={{
+          bottom: bottomPosition,
           shadowColor: '#4982BB',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,

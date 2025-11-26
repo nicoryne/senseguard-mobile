@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, SafeAreaView } from 'react-native';
+import { ScrollView, View, Text, SafeAreaView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mockPatients, caregiverProfile } from '@/lib/mock-data';
 import CaregiverRow from '@/components/connections/CaregiverRow';
 import PatientRow from '@/components/connections/PatientRow';
@@ -8,12 +9,16 @@ import PatientDetail from '@/components/connections/PatientDetail';
 import { CaregiverProfile } from '@/types/user';
 import { PatientSummary } from '@/types/user';
 import FAB from '@/components/ui/FAB';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function ConnectionsScreen() {
   const [selectedCaregiver, setSelectedCaregiver] = useState<CaregiverProfile | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<PatientSummary | null>(null);
   const [caregiverModalVisible, setCaregiverModalVisible] = useState(false);
   const [patientModalVisible, setPatientModalVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
+  const bottomPadding = tabBarHeight + insets.bottom + 16;
 
   // Mock caregivers list (in real app, this would come from API)
   const caregivers: CaregiverProfile[] = [caregiverProfile];
@@ -30,16 +35,15 @@ export default function ConnectionsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      <ScrollView className="flex-1" contentContainerClassName="pb-32">
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
+      >
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
-          <Text className="text-3xl font-bold text-[#2A2D34]" style={{ fontFamily: 'Inter' }}>
-            Connections
-          </Text>
-          <Text className="text-base text-[#6B7280] mt-1" style={{ fontFamily: 'Roboto' }}>
-            Manage your caregivers and patients
-          </Text>
-        </View>
+        <PageHeader 
+          title="Connections" 
+          subtitle="Manage your caregivers and patients" 
+        />
 
         {/* Caregivers Section */}
         <View className="px-6 mb-6">

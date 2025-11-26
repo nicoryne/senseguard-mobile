@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, SafeAreaView, Pressable, Switch, Alert } from 'react-native';
+import { ScrollView, View, Text, SafeAreaView, Pressable, Switch, Alert, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import FAB from '@/components/ui/FAB';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function SettingsScreen() {
   const { currentUser, userData, logOut } = useAuth();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
+  const bottomPadding = tabBarHeight + insets.bottom + 16;
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [batteryLevel, setBatteryLevel] = useState(78); // Mock battery level
@@ -40,16 +45,15 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      <ScrollView className="flex-1" contentContainerClassName="pb-32">
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
+      >
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
-          <Text className="text-3xl font-bold text-[#2A2D34]" style={{ fontFamily: 'Inter' }}>
-            Settings
-          </Text>
-          <Text className="text-base text-[#6B7280] mt-1" style={{ fontFamily: 'Roboto' }}>
-            Manage your account and preferences
-          </Text>
-        </View>
+        <PageHeader 
+          title="Settings" 
+          subtitle="Manage your account and preferences" 
+        />
 
         {/* Profile Section */}
         <View className="px-6 mb-6">

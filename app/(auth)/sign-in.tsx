@@ -22,11 +22,11 @@ export default function SignInScreen() {
     setLoading(true);
     try {
       await logIn(email.trim(), password);
-      router.replace('/(tabs)/home');
+      // Navigation will be handled by auth context's onAuthStateChanged
+      // This allows immediate navigation without waiting for profile fetch
     } catch (error: any) {
-      Alert.alert('Sign In Failed', error.message || 'Invalid email or password');
-    } finally {
       setLoading(false);
+      Alert.alert('Sign In Failed', error.message || 'Invalid email or password');
     }
   };
 
@@ -39,7 +39,7 @@ export default function SignInScreen() {
         <View className="flex-1 justify-center px-6 py-12">
           {/* Logo/Header */}
           <View className="items-center mb-12">
-            <View className="w-24 h-24 rounded-full bg-[#4982BB] items-center justify-center mb-4 overflow-hidden">
+            <View className="w-24 h-24 rounded-full items-center justify-center mb-4 overflow-hidden">
               <Image
                 source={require('@/assets/images/icon.png')}
                 style={{ width: 96, height: 96 }}

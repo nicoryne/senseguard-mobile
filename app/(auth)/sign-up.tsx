@@ -10,7 +10,6 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'patient' | 'caregiver'>('patient');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -35,12 +34,11 @@ export default function SignUpScreen() {
 
     setLoading(true);
     try {
-      await signUp(email.trim(), password, role, { name: name.trim() });
-      router.replace('/(tabs)/home');
+      await signUp(email.trim(), password, { name: name.trim() });
+      // Navigation will be handled by auth context's onAuthStateChanged
     } catch (error: any) {
-      Alert.alert('Sign Up Failed', error.message || 'Unable to create account');
-    } finally {
       setLoading(false);
+      Alert.alert('Sign Up Failed', error.message || 'Unable to create account');
     }
   };
 
@@ -59,7 +57,7 @@ export default function SignUpScreen() {
             >
               <Ionicons name="arrow-back" size={24} color="#2A2D34" />
             </Pressable>
-            <View className="w-20 h-20 rounded-full bg-[#4982BB] items-center justify-center mb-4 mt-4 overflow-hidden">
+            <View className="w-20 h-20 rounded-full items-center justify-center mb-4 mt-4 overflow-hidden">
               <Image
                 source={require('@/assets/images/icon.png')}
                 style={{ width: 80, height: 80 }}
@@ -109,44 +107,6 @@ export default function SignUpScreen() {
                   className="text-base text-[#2A2D34]"
                   style={{ fontFamily: 'Roboto' }}
                 />
-              </View>
-            </View>
-
-            <View>
-              <Text className="text-sm font-semibold text-[#2A2D34] mb-2" style={{ fontFamily: 'Roboto' }}>
-                Role
-              </Text>
-              <View className="flex-row gap-3">
-                <Pressable
-                  onPress={() => setRole('patient')}
-                  className={`flex-1 rounded-xl py-3 px-4 border-2 ${
-                    role === 'patient' ? 'bg-[#4982BB] border-[#4982BB]' : 'bg-white border-[#E5E7EB]'
-                  }`}
-                >
-                  <Text
-                    className={`text-center font-semibold text-base ${
-                      role === 'patient' ? 'text-white' : 'text-[#2A2D34]'
-                    }`}
-                    style={{ fontFamily: 'Roboto' }}
-                  >
-                    Patient
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => setRole('caregiver')}
-                  className={`flex-1 rounded-xl py-3 px-4 border-2 ${
-                    role === 'caregiver' ? 'bg-[#4982BB] border-[#4982BB]' : 'bg-white border-[#E5E7EB]'
-                  }`}
-                >
-                  <Text
-                    className={`text-center font-semibold text-base ${
-                      role === 'caregiver' ? 'text-white' : 'text-[#2A2D34]'
-                    }`}
-                    style={{ fontFamily: 'Roboto' }}
-                  >
-                    Caregiver
-                  </Text>
-                </Pressable>
               </View>
             </View>
 

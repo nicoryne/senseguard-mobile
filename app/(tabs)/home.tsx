@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, SafeAreaView } from 'react-native';
+import { ScrollView, View, Text, SafeAreaView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePressureData } from '@/hooks/usePressureData';
 import { useGaitData } from '@/hooks/useGaitData';
 import PressureVisualization from '@/components/sensors/PressureVisualization';
@@ -9,11 +10,15 @@ import VPTFeedback from '@/components/sensors/VPTFeedback';
 import Slider from '@/components/ui/Slider';
 import Card from '@/components/ui/Card';
 import FAB from '@/components/ui/FAB';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function HomeScreen() {
   const { latest: pressureData } = usePressureData();
   const { activity: gaitActivity } = useGaitData();
   const [vptIntensity, setVptIntensity] = useState(50);
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
+  const bottomPadding = tabBarHeight + insets.bottom + 16;
 
   // Mock temperature data (in real app, this would come from sensors)
   const leftFootTemp = 32.5;
@@ -39,16 +44,15 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      <ScrollView className="flex-1" contentContainerClassName="pb-32">
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
+      >
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
-          <Text className="text-3xl font-bold text-[#2A2D34]" style={{ fontFamily: 'Inter' }}>
-            Home
-          </Text>
-          <Text className="text-base text-[#6B7280] mt-1" style={{ fontFamily: 'Roboto' }}>
-            Real-time monitoring dashboard
-          </Text>
-        </View>
+        <PageHeader 
+          title="Home" 
+          subtitle="Real-time monitoring dashboard" 
+        />
 
         {/* Plantar Pressure Visualization */}
         <View className="px-6 mb-4">

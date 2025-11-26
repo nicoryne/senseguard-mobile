@@ -1,11 +1,17 @@
-import { ScrollView, View, Text, SafeAreaView } from 'react-native';
+import { ScrollView, View, Text, SafeAreaView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AIInsightCard from '@/components/analysis/AIInsightCard';
 import PredictionCard from '@/components/analysis/PredictionCard';
 import AdviceCard from '@/components/analysis/AdviceCard';
 import Card from '@/components/ui/Card';
 import FAB from '@/components/ui/FAB';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function AnalysisScreen() {
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
+  const bottomPadding = tabBarHeight + insets.bottom + 16;
+
   // Mock AI insights
   const insights = [
     {
@@ -74,16 +80,15 @@ export default function AnalysisScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      <ScrollView className="flex-1" contentContainerClassName="pb-32">
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
+      >
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
-          <Text className="text-3xl font-bold text-[#2A2D34]" style={{ fontFamily: 'Inter' }}>
-            AI Analysis
-          </Text>
-          <Text className="text-base text-[#6B7280] mt-1" style={{ fontFamily: 'Roboto' }}>
-            Insights, predictions, and personalized advice
-          </Text>
-        </View>
+        <PageHeader 
+          title="AI Analysis" 
+          subtitle="Insights, predictions, and personalized advice" 
+        />
 
         {/* AI Insights Section */}
         <View className="px-6 mb-6">
