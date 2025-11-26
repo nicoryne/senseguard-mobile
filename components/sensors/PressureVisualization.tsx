@@ -25,24 +25,28 @@ export default function PressureVisualization({
     return '#EF4444'; // Critical - Red
   };
 
-  // Foot SVG path (simplified foot shape)
-  const footPath = "M 50 20 Q 45 15 40 20 L 30 25 L 25 40 L 30 60 L 40 70 L 50 75 L 60 70 L 70 60 L 75 40 L 70 25 L 60 20 Q 55 15 50 20 Z";
-
-  // Pressure zones on foot (heel, midfoot, forefoot, toes)
-  const pressureZones = [
-    { x: 50, y: 70, label: 'Heel' },      // Heel
-    { x: 50, y: 50, label: 'Mid' },       // Midfoot
-    { x: 50, y: 30, label: 'Fore' },      // Forefoot
-    { x: 50, y: 15, label: 'Toe' },       // Toes
-  ];
-
   const renderFootVisualization = (data: number[], side: 'left' | 'right') => {
-    // Map pressure data to zones (assuming 6 data points map to 4 zones)
+    // Map pressure data to zones (6 data points map to 5 zones)
     const zonePressures = [
-      Math.max(data[0] || 0, data[1] || 0), // Heel (2 sensors)
-      Math.max(data[2] || 0, data[3] || 0), // Midfoot (2 sensors)
-      data[4] || 0,                          // Forefoot
+      Math.max(data[0] || 0, data[1] || 0), // Heel (2 sensors combined)
+      data[2] || 0,                          // Midfoot
+      data[3] || 0,                          // Forefoot lateral
+      data[4] || 0,                          // Forefoot medial
       data[5] || 0,                          // Toes
+    ];
+
+    // Realistic foot SVG path (plantar view - bottom of foot)
+    const footPath = side === 'left' 
+      ? "M 30 15 Q 25 12 20 15 L 15 20 Q 10 25 12 35 L 15 50 Q 18 60 25 68 L 35 72 Q 45 74 55 72 L 65 68 Q 72 60 75 50 L 78 35 Q 80 25 75 20 L 70 15 Q 65 12 60 15 L 55 18 Q 50 20 45 18 L 40 16 Q 35 14 30 15 Z"
+      : "M 70 15 Q 75 12 80 15 L 85 20 Q 90 25 88 35 L 85 50 Q 82 60 75 68 L 65 72 Q 55 74 45 72 L 35 68 Q 28 60 25 50 L 22 35 Q 20 25 25 20 L 30 15 Q 35 12 40 15 L 45 18 Q 50 20 55 18 L 60 16 Q 65 14 70 15 Z";
+
+    // Pressure zones on foot (anatomically accurate positions)
+    const pressureZones = [
+      { x: side === 'left' ? 30 : 70, y: 68, radius: 12 },      // Heel
+      { x: 50, y: 55, radius: 10 },                             // Midfoot/Arch
+      { x: side === 'left' ? 60 : 40, y: 35, radius: 9 },       // Forefoot (lateral)
+      { x: side === 'left' ? 55 : 45, y: 35, radius: 9 },       // Forefoot (medial)
+      { x: side === 'left' ? 65 : 35, y: 20, radius: 7 },      // Toes
     ];
 
     return (
@@ -51,20 +55,28 @@ export default function PressureVisualization({
           {side === 'left' ? 'Left Foot' : 'Right Foot'}
         </Text>
         <View className="relative">
-          <Svg width="100" height="100" viewBox="0 0 100 100">
-            {/* Foot outline */}
+          <Svg width="120" height="120" viewBox="0 0 100 100">
+            {/* Foot outline with gradient fill */}
+            <defs>
+              <linearGradient id={`footGradient-${side}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#F8F9FA" stopOpacity="1" />
+                <stop offset="100%" stopColor="#E5E7EB" stopOpacity="1" />
+              </linearGradient>
+            </defs>
             <Path
               d={footPath}
-              fill="#F3F4F6"
-              stroke="#E5E7EB"
-              strokeWidth="2"
+              fill={`url(#footGradient-${side})`}
+              stroke="#D1D5DB"
+              strokeWidth="1.5"
             />
-            {/* Pressure zones */}
+            {/* Pressure zones as heatmap overlays */}
             {pressureZones.map((zone, index) => {
               const pressure = zonePressures[index] || 0;
+              if (pressure === 0) return null;
+              
               const color = getPressureColor(pressure, maxPressure);
-              const opacity = 0.6 + (pressure / maxPressure) * 0.4;
-              const radius = 8 + (pressure / maxPressure) * 6;
+              const opacity = 0.5 + (pressure / maxPressure) * 0.5;
+              const radius = zone.radius * (0.7 + (pressure / maxPressure) * 0.6);
               
               return (
                 <Circle
@@ -77,6 +89,14 @@ export default function PressureVisualization({
                 />
               );
             })}
+            {/* Foot outline overlay for better definition */}
+            <Path
+              d={footPath}
+              fill="none"
+              stroke="#9CA3AF"
+              strokeWidth="1"
+              opacity="0.3"
+            />
           </Svg>
         </View>
         <Text className="text-xs text-[#6B7280] mt-2 text-center" style={{ fontFamily: 'Roboto' }}>

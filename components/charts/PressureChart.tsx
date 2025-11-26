@@ -68,8 +68,8 @@ export default function PressureChart({ leftFoot, rightFoot, className = '' }: P
         yAxisSuffix=" kPa"
         showValuesOnTopOfBars
         withInnerLines={false}
-        withHorizontalLines={true}
-        withVerticalLines={false}
+        withHorizontalLabels={true}
+        withVerticalLabels={true}
       />
       <View className="flex-row justify-center gap-4 mt-2">
         <View className="flex-row items-center">

@@ -21,10 +21,10 @@ const tabs: TabItem[] = [
 export default function BottomNavigation() {
   const pathname = usePathname()
   const router = useRouter()
-  const { isAdmin } = useAuth()
+  const { currentUser } = useAuth()
 
-  // Filter tabs based on user role
-  const visibleTabs = tabs.filter((tab) => !tab.adminOnly || isAdmin)
+  // Show all tabs (no role restrictions)
+  const visibleTabs = tabs.filter((tab) => !tab.adminOnly)
 
   const isActive = (route: string) => {
     if (route === '/(app)/settings') {
@@ -37,7 +37,7 @@ export default function BottomNavigation() {
   }
 
   return (
-    <View className="bg-white border-t border-border flex-row pb-4">
+    <View className="bg-white border-t border-border flex-row pb-8">
       {visibleTabs.map((tab) => {
         const active = isActive(tab.route)
         return (

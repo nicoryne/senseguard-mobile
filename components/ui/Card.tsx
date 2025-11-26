@@ -1,9 +1,10 @@
-import { View, ViewProps } from 'react-native'
+import React from 'react';
+import { View, ViewProps } from 'react-native';
 
 interface CardProps extends ViewProps {
-  children: React.ReactNode
-  className?: string
-  variant?: 'default' | 'elevated' | 'outlined'
+  children: React.ReactNode;
+  className?: string;
+  variant?: 'default' | 'elevated' | 'outlined';
 }
 
 export default function Card({ children, className = '', variant = 'default', ...props }: CardProps) {

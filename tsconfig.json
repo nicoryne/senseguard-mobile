@@ -4,11 +4,15 @@
     "strict": true,
     "skipLibCheck": true,
     "types": [],
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "jsx": "react-native"
   },
   "include": [
     "**/*.ts",

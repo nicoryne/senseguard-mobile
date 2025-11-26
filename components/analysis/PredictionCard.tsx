@@ -34,7 +34,7 @@ export default function PredictionCard({
           {title}
         </Text>
         <View className="flex-row items-center">
-          <Ionicons name={trendData.icon} size={20} color={trendData.color} />
+          <Ionicons name={trendData.icon as any} size={20} color={trendData.color} />
         </View>
       </View>
       
