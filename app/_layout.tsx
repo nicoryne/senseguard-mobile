@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRouter, useSegments } from 'expo-router';
 import AuthProvider, { useAuth } from '@/context/auth-context';
 import { View, ActivityIndicator } from 'react-native';
+import '@/global.css';
 
 function RootLayoutNav() {
   const { currentUser, loading } = useAuth();

@@ -3,6 +3,7 @@ import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -38,8 +39,12 @@ export default function SignInScreen() {
         <View className="flex-1 justify-center px-6 py-12">
           {/* Logo/Header */}
           <View className="items-center mb-12">
-            <View className="w-24 h-24 rounded-full bg-[#4982BB] items-center justify-center mb-4">
-              <Ionicons name="footsteps" size={48} color="#FFFFFF" />
+            <View className="w-24 h-24 rounded-full bg-[#4982BB] items-center justify-center mb-4 overflow-hidden">
+              <Image
+                source={require('@/assets/images/icon.png')}
+                style={{ width: 96, height: 96 }}
+                contentFit="contain"
+              />
             </View>
             <Text className="text-3xl font-bold text-[#2A2D34] mt-4" style={{ fontFamily: 'Inter' }}>
               SenseGuard

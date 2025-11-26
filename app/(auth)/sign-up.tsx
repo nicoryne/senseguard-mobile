@@ -3,6 +3,7 @@ import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 
 export default function SignUpScreen() {
   const [name, setName] = useState('');
@@ -58,7 +59,14 @@ export default function SignUpScreen() {
             >
               <Ionicons name="arrow-back" size={24} color="#2A2D34" />
             </Pressable>
-            <Text className="text-3xl font-bold text-[#2A2D34] mt-4" style={{ fontFamily: 'Inter' }}>
+            <View className="w-20 h-20 rounded-full bg-[#4982BB] items-center justify-center mb-4 mt-4 overflow-hidden">
+              <Image
+                source={require('@/assets/images/icon.png')}
+                style={{ width: 80, height: 80 }}
+                contentFit="contain"
+              />
+            </View>
+            <Text className="text-3xl font-bold text-[#2A2D34] mt-2" style={{ fontFamily: 'Inter' }}>
               Create Account
             </Text>
             <Text className="text-base text-[#6B7280] mt-2" style={{ fontFamily: 'Roboto' }}>

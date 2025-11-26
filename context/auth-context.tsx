@@ -139,12 +139,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     if (loading) return
 
     const inAuthGroup = segments[0] === '(auth)'
-    const inAppGroup = segments[0] === '(app)'
+    const inTabsGroup = segments[0] === '(tabs)'
 
     if (!currentUser && !inAuthGroup) {
       router.replace('/(auth)/sign-in')
     } else if (currentUser && inAuthGroup) {
-      router.replace('/(app)/dashboard')
+      router.replace('/(tabs)/home')
     }
   }, [currentUser, loading, segments, router])
 
