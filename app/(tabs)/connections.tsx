@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, SafeAreaView, Platform } from 'react-native';
+import { ScrollView, View, Text, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mockPatients, caregiverProfile } from '@/lib/mock-data';
 import CaregiverRow from '@/components/connections/CaregiverRow';
@@ -18,8 +18,7 @@ export default function ConnectionsScreen() {
   const [patientModalVisible, setPatientModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 32;
-  const headerHeight = insets.top + 100;
+  const bottomPadding = tabBarHeight + insets.bottom + 20;
 
   // Mock caregivers list (in real app, this would come from API)
   const caregivers: CaregiverProfile[] = [caregiverProfile];
@@ -35,19 +34,15 @@ export default function ConnectionsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+    <View className="flex-1 bg-[#F8F9FA]">
       <PageHeader 
         title="Connections" 
         subtitle="Manage your caregivers and patients" 
       />
       <ScrollView 
-        className="flex-1" 
-        contentContainerStyle={{ 
-          paddingBottom: bottomPadding, 
-          paddingTop: headerHeight + 8 
-        }}
+        className="flex-1 px-4 py-6" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
-        <View className="px-6 pt-6">
 
         {/* Caregivers Section */}
         <View className="mb-6">
@@ -92,7 +87,6 @@ export default function ConnectionsScreen() {
             </View>
           )}
         </View>
-        </View>
       </ScrollView>
 
       {/* Modals */}
@@ -115,7 +109,7 @@ export default function ConnectionsScreen() {
 
       {/* Emergency FAB */}
       <FAB caregiverPhone="+1234567890" />
-    </SafeAreaView>
+    </View>
   );
 }
 

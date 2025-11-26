@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, SafeAreaView, Platform } from 'react-native';
+import { ScrollView, View, Text, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AIInsightCard from '@/components/analysis/AIInsightCard';
 import PredictionCard from '@/components/analysis/PredictionCard';
@@ -10,8 +10,7 @@ import PageHeader from '@/components/ui/PageHeader';
 export default function AnalysisScreen() {
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 32;
-  const headerHeight = insets.top + 100;
+  const bottomPadding = tabBarHeight + insets.bottom + 20;
 
   // Mock AI insights
   const insights = [
@@ -80,19 +79,15 @@ export default function AnalysisScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+    <View className="flex-1 bg-[#F8F9FA]">
       <PageHeader 
         title="AI Analysis" 
         subtitle="Insights, predictions, and personalized advice" 
       />
       <ScrollView 
-        className="flex-1" 
-        contentContainerStyle={{ 
-          paddingBottom: bottomPadding, 
-          paddingTop: headerHeight + 8 
-        }}
+        className="flex-1 px-4 py-6" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
-        <View className="px-6 pt-6">
 
         {/* AI Insights Section */}
         <View className="mb-6">
@@ -214,13 +209,11 @@ export default function AnalysisScreen() {
               Comprehensive analysis shows improvement across pressure, gait, and temperature metrics.
             </Text>
           </Card>
-        </View>
-        </View>
       </ScrollView>
 
       {/* Emergency FAB */}
       <FAB caregiverPhone="+1234567890" />
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -31,11 +31,12 @@ export default function PageHeader({
 
   return (
     <LinearGradient
-    colors={['#4982BB', '#355F88', '#213B55']}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    className="px-4 pt-16 pb-6"
-  >
+      colors={['#4982BB', '#2A2D34', '#4982BB']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      className="px-4 py-4"
+      style={{ paddingTop: insets.top + 16 }}
+    >
     <View className="flex-row items-center justify-between">
       <View className="flex-1">
         {showBack && (
@@ -43,23 +44,18 @@ export default function PageHeader({
             <Feather name="arrow-left" size={24} color="#ffffff" />
           </TouchableOpacity>
         )}
-        <Text className="text-text font-heading font-bold text-2xl">{title}</Text>
+        <Text className="text-white font-bold text-2xl" style={{ fontFamily: 'Inter' }}>{title}</Text>
         {subtitle && (
-          <Text className="text-text-secondary font-sans text-sm mt-1">{subtitle}</Text>
+          <Text className="text-[#a0aec0] text-sm mt-1" style={{ fontFamily: 'Roboto' }}>{subtitle}</Text>
         )}
       </View>
       {showLogo && (
         <View className="ml-4">
-          <View
-            className="w-12 h-12 rounded-lg items-center justify-center"
-            style={{ borderWidth: 2, borderColor: '#f9a825' }}
-          >
-            <Image
-              source={require('@/assets/icon.png')}
-              className="w-10 h-10"
-              resizeMode="contain"
-            />
-          </View>
+          <Image
+            source={require('@/assets/images/icon-transparent.png')}
+            style={{ width: 48, height: 48 }}
+            contentFit="contain"
+          />
         </View>
       )}
     </View>

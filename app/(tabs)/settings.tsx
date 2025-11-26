@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, SafeAreaView, Pressable, Switch, Alert, Platform } from 'react-native';
+import { ScrollView, View, Text, Pressable, Switch, Alert, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'expo-router';
@@ -14,8 +14,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 32;
-  const headerHeight = insets.top + 100;
+  const bottomPadding = tabBarHeight + insets.bottom + 20;
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [batteryLevel, setBatteryLevel] = useState(78); // Mock battery level
@@ -45,19 +44,15 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+    <View className="flex-1 bg-[#F8F9FA]">
       <PageHeader 
         title="Settings" 
         subtitle="Manage your account and preferences" 
       />
       <ScrollView 
-        className="flex-1" 
-        contentContainerStyle={{ 
-          paddingBottom: bottomPadding, 
-          paddingTop: headerHeight + 8 
-        }}
+        className="flex-1 px-4 py-6" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
-        <View className="px-6 pt-6">
 
         {/* Profile Section */}
         <View className="mb-6">
@@ -281,7 +276,7 @@ export default function SettingsScreen() {
 
       {/* Emergency FAB */}
       <FAB caregiverPhone="+1234567890" />
-    </SafeAreaView>
+    </View>
   );
 }
 

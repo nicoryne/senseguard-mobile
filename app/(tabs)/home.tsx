@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, SafeAreaView, Platform } from 'react-native';
+import { ScrollView, View, Text, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePressureData } from '@/hooks/usePressureData';
 import { useGaitData } from '@/hooks/useGaitData';
@@ -18,9 +18,7 @@ export default function HomeScreen() {
   const [vptIntensity, setVptIntensity] = useState(50);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 88 : 64;
-  const bottomPadding = tabBarHeight + insets.bottom + 32;
-  // Header height: safe area top + padding + content (approximately 100-120px)
-  const headerHeight = insets.top + 100;
+  const bottomPadding = tabBarHeight + insets.bottom + 20;
 
   // Mock temperature data (in real app, this would come from sensors)
   const leftFootTemp = 32.5;
@@ -34,34 +32,30 @@ export default function HomeScreen() {
 
   if (!pressureData) {
     return (
-      <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+      <View className="flex-1 bg-[#F8F9FA]">
         <PageHeader 
           title="Home" 
           subtitle="Real-time monitoring dashboard" 
         />
-        <View className="flex-1 justify-center items-center" style={{ marginTop: headerHeight }}>
+        <View className="flex-1 justify-center items-center">
           <Text className="text-[#6B7280]" style={{ fontFamily: 'Roboto' }}>
             No pressure data available
           </Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+    <View className="flex-1 bg-[#F8F9FA]">
       <PageHeader 
         title="Home" 
         subtitle="Real-time monitoring dashboard" 
       />
       <ScrollView 
-        className="flex-1" 
-        contentContainerStyle={{ 
-          paddingBottom: bottomPadding, 
-          paddingTop: headerHeight + 8 
-        }}
+        className="flex-1 px-4 py-6" 
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
-        <View className="px-6 pt-6">
 
         {/* Plantar Pressure Visualization */}
         <View className="mb-4">
@@ -104,12 +98,11 @@ export default function HomeScreen() {
             </Text>
           </Card>
         </View>
-        </View>
       </ScrollView>
 
       {/* Emergency FAB */}
       <FAB caregiverPhone="+1234567890" />
-    </SafeAreaView>
+    </View>
   );
 }
 
